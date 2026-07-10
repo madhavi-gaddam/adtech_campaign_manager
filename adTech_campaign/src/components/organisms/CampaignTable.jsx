@@ -12,17 +12,18 @@ export function CampaignTable({ campaigns, onDelete, onToggleStatus, onEdit }) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
-      <table className="min-w-full">
-        <thead className="bg-gray-50 text-xs uppercase text-gray-500">
+    <div className="w-full min-w-0 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+      <div className="campaign-table-scroll max-h-[calc(100vh-280px)] min-h-[320px] max-w-full overflow-auto">
+        <table className="w-full min-w-[1120px] table-fixed border-collapse">
+        <thead className="sticky top-0 z-10 border-b border-gray-200 bg-gray-100 text-xs uppercase text-gray-500">
           <tr>
-            <th className="px-4 py-3 text-left">No.</th>
-            <th className="px-4 py-3 text-left">Name</th>
-            <th className="px-4 py-3 text-left">Platform</th>
-            <th className="px-4 py-3 text-left">Age</th>
-            <th className="px-4 py-3 text-left">Budget</th>
-            <th className="px-4 py-3 text-left">Status</th>
-            <th className="px-4 py-3 text-left">Actions</th>
+            <th className="w-[10%] px-4 py-4 text-left">Campaign ID</th>
+            <th className="w-[18%] px-4 py-4 text-left">Campaign Name</th>
+            <th className="w-[11%] px-4 py-4 text-left">Status</th>
+            <th className="w-[17%] px-4 py-4 text-left">Platform</th>
+            <th className="w-[16%] px-4 py-4 text-left">Target Audience</th>
+            <th className="w-[12%] px-4 py-4 text-left">Budget</th>
+            <th className="w-[16%] px-4 py-4 text-left">Actions</th>
           </tr>
         </thead>
 
@@ -38,7 +39,8 @@ export function CampaignTable({ campaigns, onDelete, onToggleStatus, onEdit }) {
             />
           ))}
         </tbody>
-      </table>
+        </table>
+      </div>
     </div>
   );
 }

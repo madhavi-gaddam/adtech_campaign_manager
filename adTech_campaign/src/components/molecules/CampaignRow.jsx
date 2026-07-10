@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Button } from "../atoms/Button";
+import { Pause, Pencil, Play, Trash2 } from "lucide-react";
 import { StatusBadge } from "../atoms/StatusBadge";
 import { formatCurrency } from "../../utils/formatCurrency";
 
@@ -11,61 +11,76 @@ export function CampaignRow({
   onEdit,
 }) {
   const campaignName = campaign.campaignName || campaign.name || "Untitled Campaign";
+  const isActive = campaign.status === "Active";
 
   return (
-    <tr className="border-b last:border-b-0 hover:bg-gray-50">
-      <td className="px-4 py-3 text-sm font-bold text-gray-700">{rowNumber}</td>
+    <tr className="border-b border-gray-200 bg-gray-50 last:border-b-0 hover:bg-white">
+      <td className="px-4 py-5 text-sm font-bold text-blue-900">
+        <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-md border border-gray-300 bg-blue-50 px-2">
+          {rowNumber}
+        </span>
+      </td>
 
-      <td className="px-4 py-3 text-sm font-bold text-gray-900">
-        <Link to={`/campaigns/${campaign.id}`}
-         className="text-blue-600 hover:underline"
+      <td className="px-4 py-5 text-base font-extrabold text-gray-950">
+        <Link
+          to={`/campaigns/${campaign.id}`}
+          className="hover:text-blue-700 hover:underline"
         >
-        {campaignName}
+          {campaignName}
         </Link>
-        
       </td>
 
-      <td className="px-4 py-3 text-sm text-gray-700">
-        {campaign.platform}
-      </td>
-
-      <td className="px-4 py-3 text-sm text-gray-700">
-        {campaign.ageGroup || "All"}
-      </td>
-
-      <td className="px-4 py-3 text-sm font-bold text-gray-900">
-        {formatCurrency(campaign.budget)}
-      </td>
-
-      <td className="px-4 py-3">
+      <td className="px-4 py-5">
         <StatusBadge status={campaign.status} />
       </td>
 
-      <td className="px-4 py-3">
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant="secondary"
-            className="px-3 py-1.5"
-            onClick={() => onEdit(campaign.id)}
-          >
-            Edit
-          </Button>
+      <td className="px-4 py-5 text-base font-extrabold text-gray-950">
+        {campaign.platform}
+      </td>
 
-          <Button
-            variant="secondary"
-            className="px-3 py-1.5"
+      <td className="px-4 py-5 text-base text-gray-950">
+        {campaign.ageGroup || "All"}
+      </td>
+
+      <td className="px-4 py-5 text-base text-gray-950">
+        {formatCurrency(campaign.budget)}
+      </td>
+
+      <td className="px-4 py-5">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            aria-label={isActive ? "Pause campaign" : "Activate campaign"}
+            title={isActive ? "Pause campaign" : "Activate campaign"}
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-900 transition hover:bg-indigo-200"
             onClick={() => onToggleStatus(campaign.id)}
           >
-            {campaign.status === "Active" ? "Pause" : "Active"}
-          </Button>
+            {isActive ? (
+              <Pause size={20} aria-hidden="true" />
+            ) : (
+              <Play size={20} aria-hidden="true" />
+            )}
+          </button>
 
-          <Button
-            variant="danger"
-            className="px-3 py-1.5"
+          <button
+            type="button"
+            aria-label="Edit campaign"
+            title="Edit campaign"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-gray-950 transition hover:bg-indigo-200"
+            onClick={() => onEdit(campaign.id)}
+          >
+            <Pencil size={20} aria-hidden="true" />
+          </button>
+
+          <button
+            type="button"
+            aria-label="Delete campaign"
+            title="Delete campaign"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-rose-600 text-white transition hover:bg-rose-700"
             onClick={() => onDelete(campaign.id)}
           >
-            Delete
-          </Button>
+            <Trash2 size={20} aria-hidden="true" />
+          </button>
         </div>
       </td>
     </tr>

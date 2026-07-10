@@ -128,3 +128,27 @@
     @apply font-sans;
     }
 }
+
+.campaign-table-scroll {
+  scrollbar-color: #8b8f96 #eef0f5;
+  scrollbar-width: auto;
+}
+
+.campaign-table-scroll::-webkit-scrollbar {
+  height: 14px;
+  width: 14px;
+}
+
+.campaign-table-scroll::-webkit-scrollbar-track {
+  background: #eef0f5;
+}
+
+.campaign-table-scroll::-webkit-scrollbar-thumb {
+  background: #8b8f96;
+  border: 3px solid #eef0f5;
+  border-radius: 999px;
+}
+
+.campaign-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #6f747b;
+}

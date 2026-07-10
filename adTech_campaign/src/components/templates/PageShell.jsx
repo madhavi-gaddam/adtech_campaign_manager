@@ -12,9 +12,9 @@ const linkClass = ({ isActive }) =>
 
 export function PageShell({ children }) {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="flex min-h-screen">
-        <aside className="w-64 border-r border-gray-200 bg-white px-4 py-5">
+    <div className="min-h-screen overflow-x-hidden bg-gray-100">
+      <div className="flex min-h-screen min-w-0">
+        <aside className="sticky top-0 h-screen w-64 shrink-0 border-r border-gray-200 bg-white px-4 py-5">
           <BrandLockup />
 
           <nav className="mt-8 grid gap-2">
@@ -35,8 +35,8 @@ export function PageShell({ children }) {
           </nav>
         </aside>
 
-        <main className="flex-1 px-6 py-6">
-          <div className="mx-auto grid max-w-7xl gap-5">
+        <main className="min-w-0 flex-1 px-6 py-6">
+          <div className="mx-auto grid w-full max-w-7xl min-w-0 gap-5">
             {children}
           </div>
         </main>

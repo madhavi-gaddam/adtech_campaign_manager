@@ -6,14 +6,13 @@ import { Button } from '../components/atoms/Button'
 import { MetricCard } from '../components/atoms/MetricCard'
 import { PageHeader } from '../components/molecules/PageHeader'
 import { PageShell } from '../components/templates/PageShell'
-
+import { BudgetBarChart } from "../components/organisms/BudgetBarChart";
 import { formatCurrency } from '../domain/campaign'
 import { getCampaignSummary } from '../features/campaigns/campaignAnalytics'
 import { CampaignContext } from '../context/CampaignContextValue'
 
 export function DashboardPage() {
   const { campaigns } = useContext(CampaignContext)
-
   const summary = getCampaignSummary(campaigns)
 
   return (
@@ -51,6 +50,8 @@ export function DashboardPage() {
           value={formatCurrency(summary.totalBudget)}
         />
       </div>
+
+      <BudgetBarChart campaigns={campaigns} />
     </PageShell>
   )
 }
