@@ -20,7 +20,7 @@ export function CampaignForm() {
   const isEditMode = Boolean(id);
 
   const [campaign, setCampaign] = useState(() => ({
-    campaignName: editCampaign?.campaignName || "",
+    campaignName: editCampaign?.campaignName || editCampaign?.name || "",
     platform: editCampaign?.platform || "Facebook",
     ageGroup: editCampaign?.ageGroup || "All",
     budget: editCampaign?.budget || "",
@@ -29,7 +29,7 @@ export function CampaignForm() {
   useEffect(() => {
     if (editCampaign) {
       setCampaign({
-        campaignName: editCampaign.campaignName,
+        campaignName: editCampaign.campaignName || editCampaign.name || "",
         platform: editCampaign.platform,
         ageGroup: editCampaign.ageGroup,
         budget: editCampaign.budget,

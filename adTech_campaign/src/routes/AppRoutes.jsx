@@ -2,7 +2,8 @@ import { Route, Routes } from 'react-router-dom'
 
 import { DashboardPage } from '../pages/Dashboard'
 import Campaigns from '../pages/Campaigns'
-import {CreateCampaign} from '../pages/CreateCampaign'
+import {CreateCampaign} from '../pages/CreateCampaign';
+import CampaignDetails from "../pages/CampaignDetails";
 import NotFound from '../pages/NotFound'
 
 function AppRoutes() {
@@ -11,8 +12,8 @@ function AppRoutes() {
       <Route path="/" element={<DashboardPage />} />
       <Route path="/campaigns" element={<Campaigns />} />
       <Route path="/campaigns/create" element={<CreateCampaign />} />
+      <Route path="/campaigns/:id" element={<CampaignDetails />}/>
       <Route path="/campaigns/edit/:id" element={<CreateCampaign />} />
-
       <Route path="*" element={<NotFound />} />
     </Routes>
   )

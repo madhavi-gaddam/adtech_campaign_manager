@@ -16,9 +16,10 @@ export function CampaignTable({ campaigns, onDelete, onToggleStatus, onEdit }) {
       <table className="min-w-full">
         <thead className="bg-gray-50 text-xs uppercase text-gray-500">
           <tr>
-            <th className="px-4 py-3 text-left">ID</th>
+            <th className="px-4 py-3 text-left">No.</th>
             <th className="px-4 py-3 text-left">Name</th>
             <th className="px-4 py-3 text-left">Platform</th>
+            <th className="px-4 py-3 text-left">Age</th>
             <th className="px-4 py-3 text-left">Budget</th>
             <th className="px-4 py-3 text-left">Status</th>
             <th className="px-4 py-3 text-left">Actions</th>
@@ -26,10 +27,11 @@ export function CampaignTable({ campaigns, onDelete, onToggleStatus, onEdit }) {
         </thead>
 
         <tbody>
-          {campaigns.map((campaign) => (
+          {campaigns.map((campaign, index) => (
             <CampaignRow
               key={campaign.id}
               campaign={campaign}
+              rowNumber={index + 1}
               onDelete={onDelete}
               onEdit={onEdit}
               onToggleStatus={onToggleStatus}

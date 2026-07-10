@@ -1,4 +1,4 @@
-// src/components/molecules/EmptyState.jsx
+
 
 import { Link } from 'react-router-dom'
 import { Button } from '../atoms/Button'

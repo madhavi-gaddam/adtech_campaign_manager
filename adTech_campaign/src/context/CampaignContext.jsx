@@ -3,7 +3,7 @@ import { createContext, useEffect, useState } from "react";
 
 export const CampaignContext = createContext();
 
-const storageKey = "adtech-campaigns";
+const storageKey = "adtech-created-campaigns";
 
 function getNextCampaignId(campaigns) {
   const lastNumber = campaigns.reduce((highestNumber, campaign) => {
@@ -15,17 +15,16 @@ function getNextCampaignId(campaigns) {
 }
 
 function normalizeCampaignIds(campaigns) {
-  const alreadySimple = campaigns.every((campaign) =>
-    /^C\d{3}$/.test(String(campaign.id))
-  );
-
-  if (alreadySimple) {
-    return campaigns;
+  if (!Array.isArray(campaigns)) {
+    return [];
   }
 
   return campaigns.map((campaign, index) => ({
     ...campaign,
-    id: `C${String(index + 1).padStart(3, "0")}`,
+    campaignName: campaign.campaignName || campaign.name || "Untitled Campaign",
+    id: /^C\d{3}$/.test(String(campaign.id))
+      ? campaign.id
+      : `C${String(index + 1).padStart(3, "0")}`,
   }));
 }
 
@@ -36,11 +35,15 @@ export function CampaignProvider({ children }) {
     const savedCampaigns = localStorage.getItem(storageKey);
 
     if (savedCampaigns) {
-      const parsedCampaigns = JSON.parse(savedCampaigns);
-      const normalizedCampaigns = normalizeCampaignIds(parsedCampaigns);
+      try {
+        const parsedCampaigns = JSON.parse(savedCampaigns);
+        const normalizedCampaigns = normalizeCampaignIds(parsedCampaigns);
 
-      setCampaigns(normalizedCampaigns);
-      localStorage.setItem(storageKey, JSON.stringify(normalizedCampaigns));
+        setCampaigns(normalizedCampaigns);
+        localStorage.setItem(storageKey, JSON.stringify(normalizedCampaigns));
+      } catch {
+        localStorage.removeItem(storageKey);
+      }
     }
   }, []);
 
@@ -54,6 +57,7 @@ export function CampaignProvider({ children }) {
       ...campaign,
       id: getNextCampaignId(campaigns),
       status: "Active",
+       createdAt: new Date().toISOString(),
     };
 
     saveCampaigns([...campaigns, newCampaign]);

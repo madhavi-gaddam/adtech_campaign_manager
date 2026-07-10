@@ -1,4 +1,3 @@
-// src/components/molecules/PageHeader.jsx
 
 export function PageHeader({ eyebrow, title, description, actions }) {
   return (

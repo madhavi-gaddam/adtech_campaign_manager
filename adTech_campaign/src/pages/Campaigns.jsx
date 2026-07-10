@@ -20,7 +20,8 @@ export default function Campaigns() {
 
   const filteredCampaigns = useMemo(() => {
     const filtered = campaigns.filter((campaign) => {
-      const nameMatch = campaign.campaignName
+      const campaignName = campaign.campaignName || campaign.name || "";
+      const nameMatch = campaignName
         .toLowerCase()
         .includes(searchText.toLowerCase());
       const statusMatch =
@@ -39,9 +40,11 @@ export default function Campaigns() {
       }
 
       if (sortBy === "name") {
-        return firstCampaign.campaignName.localeCompare(
-          secondCampaign.campaignName
-        );
+        const firstName = firstCampaign.campaignName || firstCampaign.name || "";
+        const secondName =
+          secondCampaign.campaignName || secondCampaign.name || "";
+
+        return firstName.localeCompare(secondName);
       }
 
       return String(secondCampaign.id).localeCompare(String(firstCampaign.id));

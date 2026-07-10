@@ -1,4 +1,4 @@
-// src/components/molecules/SectionPanel.jsx
+
 
 export function SectionPanel({ children, className = '' }) {
   return (

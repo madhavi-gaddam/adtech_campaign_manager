@@ -1,18 +1,36 @@
+import { Link } from "react-router-dom";
 import { Button } from "../atoms/Button";
 import { StatusBadge } from "../atoms/StatusBadge";
 import { formatCurrency } from "../../utils/formatCurrency";
 
-export function CampaignRow({ campaign, onDelete, onToggleStatus, onEdit }) {
+export function CampaignRow({
+  campaign,
+  rowNumber,
+  onDelete,
+  onToggleStatus,
+  onEdit,
+}) {
+  const campaignName = campaign.campaignName || campaign.name || "Untitled Campaign";
+
   return (
     <tr className="border-b last:border-b-0 hover:bg-gray-50">
-      <td className="px-4 py-3 text-sm font-bold text-gray-700">{campaign.id}</td>
+      <td className="px-4 py-3 text-sm font-bold text-gray-700">{rowNumber}</td>
 
       <td className="px-4 py-3 text-sm font-bold text-gray-900">
-        {campaign.campaignName}
+        <Link to={`/campaigns/${campaign.id}`}
+         className="text-blue-600 hover:underline"
+        >
+        {campaignName}
+        </Link>
+        
       </td>
 
       <td className="px-4 py-3 text-sm text-gray-700">
         {campaign.platform}
+      </td>
+
+      <td className="px-4 py-3 text-sm text-gray-700">
+        {campaign.ageGroup || "All"}
       </td>
 
       <td className="px-4 py-3 text-sm font-bold text-gray-900">
