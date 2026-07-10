@@ -1,6 +1,6 @@
 // src/features/campaigns/useCampaigns.js
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const storageKey = 'adtech-campaigns'
 
@@ -32,15 +32,15 @@ const sampleCampaigns = [
 ]
 
 export function useCampaigns() {
-  const [campaigns, setCampaigns] = useState([])
-
-  useEffect(() => {
+  const [campaigns, setCampaigns] = useState(() => {
     const savedCampaigns = localStorage.getItem(storageKey)
 
     if (savedCampaigns) {
-      setCampaigns(JSON.parse(savedCampaigns))
+      return JSON.parse(savedCampaigns)
     }
-  }, [])
+
+    return []
+  })
 
   const saveCampaigns = (nextCampaigns) => {
     setCampaigns(nextCampaigns)

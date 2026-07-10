@@ -9,7 +9,7 @@ import { PageShell } from '../components/templates/PageShell'
 
 import { formatCurrency } from '../domain/campaign'
 import { getCampaignSummary } from '../features/campaigns/campaignAnalytics'
-import { CampaignContext } from '../context/CampaignContext'
+import { CampaignContext } from '../context/CampaignContextValue'
 
 export function DashboardPage() {
   const { campaigns } = useContext(CampaignContext)

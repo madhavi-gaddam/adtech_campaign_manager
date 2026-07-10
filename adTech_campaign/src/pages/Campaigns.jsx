@@ -1,7 +1,8 @@
 import { useContext, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { CampaignContext } from "../context/CampaignContext";
+import { toast } from "react-toastify";
+import { CampaignContext } from "../context/CampaignContextValue";
 
 import { Button } from "../components/atoms/Button";
 import { Input } from "../components/atoms/Input";
@@ -17,6 +18,7 @@ export default function Campaigns() {
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
+  const [campaignToDelete, setCampaignToDelete] = useState(null);
 
   const filteredCampaigns = useMemo(() => {
     const filtered = campaigns.filter((campaign) => {
@@ -52,10 +54,21 @@ export default function Campaigns() {
   }, [campaigns, searchText, sortBy, statusFilter]);
 
   function handleDelete(id) {
-    const shouldDelete = window.confirm("Delete this campaign?");
+    const selectedCampaign = campaigns.find((campaign) => campaign.id === id);
+    setCampaignToDelete(selectedCampaign);
+  }
 
-    if (shouldDelete) {
-      deleteCampaign(id);
+  function confirmDelete() {
+    if (!campaignToDelete) {
+      return;
+    }
+
+    try {
+      deleteCampaign(campaignToDelete.id);
+      toast.error("Campaign deleted successfully.");
+      setCampaignToDelete(null);
+    } catch {
+      toast.error("Unable to delete campaign.");
     }
   }
 
@@ -106,6 +119,38 @@ export default function Campaigns() {
         onEdit={(id) => navigate(`/campaigns/edit/${id}`)}
         onToggleStatus={toggleCampaignStatus}
       />
+      {campaignToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <h2 className="text-lg font-bold text-gray-900">
+              Delete campaign?
+            </h2>
+
+            <p className="mt-2 text-sm text-gray-600">
+              Are you sure you want to delete{" "}
+              <span className="font-bold">
+                {campaignToDelete.campaignName ||
+                  campaignToDelete.name ||
+                  "this campaign"}
+              </span>
+              ? This action cannot be undone.
+            </p>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <Button
+                variant="secondary"
+                onClick={() => setCampaignToDelete(null)}
+              >
+                Cancel
+              </Button>
+
+              <Button variant="danger" onClick={confirmDelete}>
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageShell>
   );
 }

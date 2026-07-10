@@ -1,8 +1,9 @@
 // src/hooks/useToast.js
+import { toast } from "react-toastify";
 
 export function useToast() {
   const showToast = (message) => {
-    window.alert(message)
+    toast(message)
   }
 
   return {

@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { useParams } from "react-router-dom";
 
-import { CampaignContext } from "../context/CampaignContext";
+import { CampaignContext } from "../context/CampaignContextValue";
 
 import { PageShell } from "../components/templates/PageShell";
 import { PageHeader } from "../components/molecules/PageHeader";

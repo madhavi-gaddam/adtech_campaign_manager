@@ -1,7 +1,5 @@
-import { createContext, useEffect, useState } from "react";
-
-
-export const CampaignContext = createContext();
+import { useState } from "react";
+import { CampaignContext } from "./CampaignContextValue";
 
 const storageKey = "adtech-created-campaigns";
 
@@ -28,24 +26,27 @@ function normalizeCampaignIds(campaigns) {
   }));
 }
 
+function loadStoredCampaigns() {
+  const savedCampaigns = localStorage.getItem(storageKey);
+
+  if (!savedCampaigns) {
+    return [];
+  }
+
+  try {
+    const parsedCampaigns = JSON.parse(savedCampaigns);
+    const normalizedCampaigns = normalizeCampaignIds(parsedCampaigns);
+
+    localStorage.setItem(storageKey, JSON.stringify(normalizedCampaigns));
+    return normalizedCampaigns;
+  } catch {
+    localStorage.removeItem(storageKey);
+    return [];
+  }
+}
+
 export function CampaignProvider({ children }) {
-  const [campaigns, setCampaigns] = useState([]);
-
-  useEffect(() => {
-    const savedCampaigns = localStorage.getItem(storageKey);
-
-    if (savedCampaigns) {
-      try {
-        const parsedCampaigns = JSON.parse(savedCampaigns);
-        const normalizedCampaigns = normalizeCampaignIds(parsedCampaigns);
-
-        setCampaigns(normalizedCampaigns);
-        localStorage.setItem(storageKey, JSON.stringify(normalizedCampaigns));
-      } catch {
-        localStorage.removeItem(storageKey);
-      }
-    }
-  }, []);
+  const [campaigns, setCampaigns] = useState(loadStoredCampaigns);
 
   function saveCampaigns(nextCampaigns) {
     setCampaigns(nextCampaigns);
@@ -57,7 +58,7 @@ export function CampaignProvider({ children }) {
       ...campaign,
       id: getNextCampaignId(campaigns),
       status: "Active",
-       createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
     };
 
     saveCampaigns([...campaigns, newCampaign]);
