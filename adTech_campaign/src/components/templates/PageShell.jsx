@@ -1,4 +1,3 @@
-// src/components/templates/PageShell.jsx
 
 import { LayoutDashboard, Megaphone, PlusCircle } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
@@ -19,7 +18,7 @@ export function PageShell({ children }) {
           <BrandLockup />
 
           <nav className="mt-8 grid gap-2">
-            <NavLink to="/" className={linkClass}>
+            <NavLink to="/" end className={linkClass}>
               <LayoutDashboard size={18} aria-hidden="true" />
               Dashboard
             </NavLink>
@@ -29,7 +28,7 @@ export function PageShell({ children }) {
               Campaigns
             </NavLink>
 
-            <NavLink to="/campaigns/new" className={linkClass}>
+            <NavLink to="/campaigns/create" className={linkClass}>
               <PlusCircle size={18} aria-hidden="true" />
               Create Campaign
             </NavLink>

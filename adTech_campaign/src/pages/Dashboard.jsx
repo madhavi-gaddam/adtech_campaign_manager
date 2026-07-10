@@ -1,4 +1,5 @@
 import { Activity, Banknote, Megaphone, Plus } from 'lucide-react'
+import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Button } from '../components/atoms/Button'
@@ -8,10 +9,10 @@ import { PageShell } from '../components/templates/PageShell'
 
 import { formatCurrency } from '../domain/campaign'
 import { getCampaignSummary } from '../features/campaigns/campaignAnalytics'
-import { useCampaigns } from '../features/campaigns/useCampaigns'
+import { CampaignContext } from '../context/CampaignContext'
 
 export function DashboardPage() {
-  const { campaigns } = useCampaigns()
+  const { campaigns } = useContext(CampaignContext)
 
   const summary = getCampaignSummary(campaigns)
 
@@ -23,7 +24,7 @@ export function DashboardPage() {
         description="View your campaign count, active campaigns, and total budget."
         actions={
           <>
-            <Button as={Link} to="/campaigns/new">
+            <Button as={Link} to="/campaigns/create">
               <Plus size={18} aria-hidden="true" />
               New Campaign
             </Button>
