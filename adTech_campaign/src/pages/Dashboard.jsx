@@ -10,7 +10,7 @@ import { BudgetBarChart } from "../components/organisms/BudgetBarChart";
 import { formatCurrency } from '../domain/campaign'
 import { getCampaignSummary } from '../features/campaigns/campaignAnalytics'
 import { CampaignContext } from '../context/CampaignContextValue'
-
+import { PlatformPieChart } from "../components/organisms/PlatformPieChart";
 export function DashboardPage() {
   const { campaigns } = useContext(CampaignContext)
   const summary = getCampaignSummary(campaigns)
@@ -31,7 +31,7 @@ export function DashboardPage() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="sticky grid gap-4 sm:grid-cols-3">
         <MetricCard
           icon={<Megaphone size={21} aria-hidden="true" />}
           label="Total Campaigns"
@@ -51,7 +51,10 @@ export function DashboardPage() {
         />
       </div>
 
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <BudgetBarChart campaigns={campaigns} />
+      <PlatformPieChart campaigns={campaigns} />
+    </div>
     </PageShell>
   )
 }
