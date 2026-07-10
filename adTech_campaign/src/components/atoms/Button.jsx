@@ -1,32 +1,29 @@
-// src/components/atoms/Button.jsx
+export function Button({
+  as: Component = "button",
+  children,
+  type = "button",
+  variant = "primary",
+  className = "",
+  ...props
+}) {
+  let buttonStyle = "";
 
-import { forwardRef } from 'react'
+  if (variant === "primary") {
+    buttonStyle = "bg-blue-600 text-white hover:bg-blue-700";
+  } else if (variant === "secondary") {
+    buttonStyle =
+      "bg-white text-gray-800 border border-gray-300 hover:bg-gray-50";
+  } else if (variant === "danger") {
+    buttonStyle = "bg-red-600 text-white hover:bg-red-700";
+  }
 
-const variantClasses = {
-  primary: 'bg-blue-600 text-white hover:bg-blue-700',
-  secondary: 'bg-white text-gray-800 border border-gray-300 hover:bg-gray-50',
-  danger: 'bg-red-600 text-white hover:bg-red-700',
-}
-
-export const Button = forwardRef(function Button(
-  {
-    as: Component = 'button',
-    children,
-    className = '',
-    variant = 'primary',
-    type = 'button',
-    ...props
-  },
-  ref,
-) {
   return (
     <Component
-      ref={ref}
-      type={Component === 'button' ? type : undefined}
-      className={`inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-bold transition ${variantClasses[variant]} ${className}`}
+      type={Component === "button" ? type : undefined}
+      className={`inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-bold transition ${buttonStyle} ${className}`}
       {...props}
     >
       {children}
     </Component>
-  )
-})
+  );
+}
