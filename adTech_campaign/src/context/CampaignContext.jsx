@@ -3,18 +3,29 @@ import { CampaignContext } from "./CampaignContextValue";
 
 const storageKey = "adtech-created-campaigns";
 
-function createCampaignId() {
-  return crypto.randomUUID();
+function createCampaignId(usedIds = new Set()) {
+  const highestNumber = [...usedIds].reduce((highest, id) => {
+    const value = Number(id);
+    return Number.isInteger(value) && value > 0 ? Math.max(highest, value) : highest;
+  }, 0);
+
+  return String(highestNumber + 1);
 }
 
 function normalizeCampaigns(value) {
   if (!Array.isArray(value)) return [];
 
+  const usedIds = new Set();
   return value.map((campaign) => {
     const budget = Number(campaign.budget);
+    const storedId = String(campaign.id || "").toUpperCase();
+    const id = /^[1-9]\d*$/.test(storedId) && !usedIds.has(storedId)
+      ? storedId
+      : createCampaignId(usedIds);
+    usedIds.add(id);
     return {
       ...campaign,
-      id: campaign.id ? String(campaign.id) : createCampaignId(),
+      id,
       campaignName: String(campaign.campaignName || campaign.name || "Untitled Campaign").trim(),
       budget: Number.isFinite(budget) && budget >= 0 ? budget : 0,
       status: campaign.status === "Paused" ? "Paused" : "Active",
@@ -51,7 +62,7 @@ export function CampaignProvider({ children }) {
     const now = new Date().toISOString();
     saveCampaigns([
       ...campaigns,
-      { ...campaign, id: createCampaignId(), status: "Active", createdAt: now, updatedAt: now },
+      { ...campaign, id: createCampaignId(new Set(campaigns.map((item) => item.id))), status: "Active", createdAt: now, updatedAt: now },
     ]);
   }, [campaigns, saveCampaigns]);
 

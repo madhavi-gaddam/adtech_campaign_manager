@@ -9,6 +9,9 @@ export function CampaignDetailsCard({ campaign }) {
   const createdDate = campaign.createdAt
     ? new Date(campaign.createdAt).toLocaleDateString("en-IN")
     : "Not available";
+  const updatedDate = campaign.updatedAt
+    ? new Date(campaign.updatedAt).toLocaleString("en-IN")
+    : "Not updated yet";
 
   return (
     <div className="max-w-3xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
@@ -50,6 +53,11 @@ export function CampaignDetailsCard({ campaign }) {
       <InfoItem
         label="Created Date"
         value={createdDate}
+      />
+
+      <InfoItem
+        label="Last Updated"
+        value={updatedDate}
       />
 
       <div className="mt-8 flex gap-4">

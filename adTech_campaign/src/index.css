@@ -152,3 +152,56 @@
 .campaign-table-scroll::-webkit-scrollbar-thumb:hover {
   background: #6f747b;
 }
+
+html.dark .bg-gray-100,
+html.dark .bg-gray-50 {
+  background-color: #111827;
+}
+
+html.dark .bg-white {
+  background-color: #1f2937;
+}
+
+html.dark .hover\:bg-white:hover,
+html.dark .hover\:bg-gray-100:hover {
+  background-color: #263244;
+}
+
+html.dark .text-gray-950,
+html.dark .text-gray-900 {
+  color: #f9fafb;
+}
+
+html.dark .text-gray-700,
+html.dark .text-gray-600,
+html.dark .text-gray-500 {
+  color: #cbd5e1;
+}
+
+html.dark .border-gray-200,
+html.dark .border-gray-300 {
+  border-color: #475569;
+}
+
+html.dark input,
+html.dark select {
+  background-color: #111827;
+  border-color: #475569;
+  color: #f9fafb;
+}
+
+html.dark .recharts-cartesian-axis-tick-value {
+  fill: #cbd5e1;
+}
+
+html.dark .recharts-cartesian-grid line {
+  stroke: #475569;
+}
+
+html.dark .campaign-table-scroll {
+  scrollbar-color: #64748b #1f2937;
+}
+
+html.dark .campaign-table-scroll::-webkit-scrollbar-track {
+  background: #1f2937;
+}

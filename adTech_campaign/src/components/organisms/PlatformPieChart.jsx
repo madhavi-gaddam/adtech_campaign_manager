@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { Cell, Label, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 import { formatCurrency } from "../../domain/campaign";
 
@@ -48,12 +48,20 @@ export function PlatformPieChart({ campaigns }) {
       platforms[platform].budget += Number(campaign.budget) || 0;
       return platforms;
     }, {})
-  ).filter((item) => item.budget > 0);
+  );
   const total = data.reduce((sum, item) => sum + item.budget, 0);
+  const hasFilters = status !== "All" || ageGroup !== "All";
 
   return (
     <section className="flex h-full min-h-0 flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm" aria-labelledby={titleId}>
-      <h2 id={titleId} className="text-lg font-bold text-gray-900">Budget by Platform</h2>
+      <div className="flex items-center justify-between gap-3">
+        <h2 id={titleId} className="text-lg font-bold text-gray-900">Budget by Platform</h2>
+        {hasFilters && (
+          <button type="button" onClick={() => { setStatus("All"); setAgeGroup("All"); }} className="text-xs font-semibold text-blue-600 hover:underline">
+            Clear filters
+          </button>
+        )}
+      </div>
 
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="text-xs font-bold uppercase tracking-wide text-gray-500">
@@ -75,14 +83,15 @@ export function PlatformPieChart({ campaigns }) {
       </div>
 
       <p className="sr-only">Total budget {formatCurrency(total)}. {data.map((item) => `${item.platform}: ${formatCurrency(item.budget)}`).join("; ")}</p>
-      {!data.length ? (
+      {!data.length || total === 0 ? (
         <div className="flex h-64 items-center justify-center text-gray-500">No budget data available for these filters.</div>
       ) : (
         <>
-          <div className="h-52 shrink-0" aria-hidden="true">
+          <div className="h-48 shrink-0 sm:h-56" aria-hidden="true">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={data} dataKey="budget" nameKey="platform" cx="50%" cy="50%" innerRadius={55} outerRadius={82} paddingAngle={1} cornerRadius={0} stroke="#fff" strokeWidth={2}>
+                <Pie data={data} dataKey="budget" nameKey="platform" cx="50%" cy="50%" innerRadius="45%" outerRadius="70%" paddingAngle={0} cornerRadius={0} stroke="none">
+                  <Label value={formatCurrency(total)} position="center" style={{ fontSize: 13, fontWeight: 700, fill: "var(--foreground)" }} />
                   {data.map((item, index) => <Cell key={item.platform} fill={getColor(item.platform, index)} />)}
                 </Pie>
                 <Tooltip content={<BudgetTooltip total={total} />} />
@@ -92,7 +101,7 @@ export function PlatformPieChart({ campaigns }) {
 
           <ul className="flex flex-wrap gap-x-4 gap-y-2 border-t border-gray-200 pt-3">
             {data.map((item, index) => (
-              <li key={item.platform} className="flex min-w-0 items-center gap-1.5 text-xs">
+              <li key={item.platform} title={`${item.platform}: ${formatCurrency(item.budget)} (${total ? ((item.budget / total) * 100).toFixed(1) : "0.0"}%)`} className={`flex min-w-0 items-center gap-1.5 text-xs ${item.budget === 0 ? "opacity-50" : ""}`}>
                 <div className="flex items-center gap-1.5 font-semibold text-gray-900">
                   <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: getColor(item.platform, index) }} />
                   {item.platform}

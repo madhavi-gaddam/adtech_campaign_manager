@@ -1,11 +1,11 @@
 import { CampaignRow } from "../molecules/CampaignRow";
 
-export function CampaignTable({ campaigns, onDelete, onToggleStatus, onEdit }) {
+export function CampaignTable({ campaigns, onDelete, onToggleStatus, onEdit, emptyMessage = "No campaigns found." }) {
   if (campaigns.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-gray-300 bg-white p-8 text-center">
         <p className="text-sm font-medium text-gray-600">
-          No campaigns found.
+          {emptyMessage}
         </p>
       </div>
     );
@@ -28,11 +28,10 @@ export function CampaignTable({ campaigns, onDelete, onToggleStatus, onEdit }) {
         </thead>
 
         <tbody>
-          {campaigns.map((campaign, index) => (
+          {campaigns.map((campaign) => (
             <CampaignRow
               key={campaign.id}
               campaign={campaign}
-              rowNumber={index + 1}
               onDelete={onDelete}
               onEdit={onEdit}
               onToggleStatus={onToggleStatus}
