@@ -32,12 +32,12 @@ export function BudgetBarChart({ campaigns }) {
   }
 
   return (
-    <div className="min-w-0 rounded-lg bg-white p-6 shadow">
-      <h2 className="mb-5 text-lg font-bold">
+    <div className="flex h-full min-h-0 min-w-0 flex-col rounded-lg bg-white p-4 shadow">
+      <h2 className="mb-3 text-lg font-bold">
         Top 5 Active Campaigns by Budget
       </h2>
 
-      <div className="h-80 min-w-0">
+      <div className="min-h-56 min-w-0 flex-1">
         <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={topCampaigns}

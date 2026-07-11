@@ -31,7 +31,7 @@ export function DashboardPage() {
         }
       />
 
-      <div className="sticky grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-3">
         <MetricCard
           icon={<Megaphone size={21} aria-hidden="true" />}
           label="Total Campaigns"
@@ -51,10 +51,10 @@ export function DashboardPage() {
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      <BudgetBarChart campaigns={campaigns} />
-      <PlatformPieChart campaigns={campaigns} />
-    </div>
+      <div className="grid min-h-0 grid-cols-1 gap-4 lg:grid-cols-2">
+        <BudgetBarChart campaigns={campaigns} />
+        <PlatformPieChart campaigns={campaigns} />
+      </div>
     </PageShell>
   )
 }

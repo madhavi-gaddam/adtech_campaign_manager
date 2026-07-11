@@ -1,46 +1,36 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { CampaignContext } from "./CampaignContextValue";
 
 const storageKey = "adtech-created-campaigns";
 
-function getNextCampaignId(campaigns) {
-  const lastNumber = campaigns.reduce((highestNumber, campaign) => {
-    const idNumber = Number(String(campaign.id).replace("C", ""));
-    return Number.isNaN(idNumber) ? highestNumber : Math.max(highestNumber, idNumber);
-  }, 0);
-
-  return `C${String(lastNumber + 1).padStart(3, "0")}`;
+function createCampaignId() {
+  return crypto.randomUUID();
 }
 
-function normalizeCampaignIds(campaigns) {
-  if (!Array.isArray(campaigns)) {
-    return [];
-  }
+function normalizeCampaigns(value) {
+  if (!Array.isArray(value)) return [];
 
-  return campaigns.map((campaign, index) => ({
-    ...campaign,
-    campaignName: campaign.campaignName || campaign.name || "Untitled Campaign",
-    id: /^C\d{3}$/.test(String(campaign.id))
-      ? campaign.id
-      : `C${String(index + 1).padStart(3, "0")}`,
-  }));
+  return value.map((campaign) => {
+    const budget = Number(campaign.budget);
+    return {
+      ...campaign,
+      id: campaign.id ? String(campaign.id) : createCampaignId(),
+      campaignName: String(campaign.campaignName || campaign.name || "Untitled Campaign").trim(),
+      budget: Number.isFinite(budget) && budget >= 0 ? budget : 0,
+      status: campaign.status === "Paused" ? "Paused" : "Active",
+    };
+  });
 }
 
 function loadStoredCampaigns() {
-  const savedCampaigns = localStorage.getItem(storageKey);
-
-  if (!savedCampaigns) {
-    return [];
-  }
-
   try {
-    const parsedCampaigns = JSON.parse(savedCampaigns);
-    const normalizedCampaigns = normalizeCampaignIds(parsedCampaigns);
+    const savedCampaigns = localStorage.getItem(storageKey);
+    if (!savedCampaigns) return [];
 
-    localStorage.setItem(storageKey, JSON.stringify(normalizedCampaigns));
-    return normalizedCampaigns;
+    const campaigns = normalizeCampaigns(JSON.parse(savedCampaigns));
+    localStorage.setItem(storageKey, JSON.stringify(campaigns));
+    return campaigns;
   } catch {
-    localStorage.removeItem(storageKey);
     return [];
   }
 }
@@ -48,68 +38,54 @@ function loadStoredCampaigns() {
 export function CampaignProvider({ children }) {
   const [campaigns, setCampaigns] = useState(loadStoredCampaigns);
 
-  function saveCampaigns(nextCampaigns) {
-    setCampaigns(nextCampaigns);
-    localStorage.setItem(storageKey, JSON.stringify(nextCampaigns));
-  }
+  const saveCampaigns = useCallback((nextCampaigns) => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(nextCampaigns));
+      setCampaigns(nextCampaigns);
+    } catch {
+      throw new Error("Campaigns could not be saved. Browser storage may be unavailable or full.");
+    }
+  }, []);
 
-  function addCampaign(campaign) {
-    const newCampaign = {
-      ...campaign,
-      id: getNextCampaignId(campaigns),
-      status: "Active",
-      createdAt: new Date().toISOString(),
-    };
+  const addCampaign = useCallback((campaign) => {
+    const now = new Date().toISOString();
+    saveCampaigns([
+      ...campaigns,
+      { ...campaign, id: createCampaignId(), status: "Active", createdAt: now, updatedAt: now },
+    ]);
+  }, [campaigns, saveCampaigns]);
 
-    saveCampaigns([...campaigns, newCampaign]);
-  }
-
-  function updateCampaign(id, updatedCampaign) {
-    const updatedCampaigns = campaigns.map((campaign) =>
+  const updateCampaign = useCallback((id, updatedCampaign) => {
+    saveCampaigns(campaigns.map((campaign) =>
       campaign.id === id
-        ? {
-            ...campaign,
-            ...updatedCampaign,
-          }
+        ? { ...campaign, ...updatedCampaign, updatedAt: new Date().toISOString() }
         : campaign
-    );
+    ));
+  }, [campaigns, saveCampaigns]);
 
-    saveCampaigns(updatedCampaigns);
-  }
-
-  function toggleCampaignStatus(id) {
-    const updatedCampaigns = campaigns.map((campaign) =>
+  const toggleCampaignStatus = useCallback((id) => {
+    saveCampaigns(campaigns.map((campaign) =>
       campaign.id === id
         ? {
             ...campaign,
             status: campaign.status === "Active" ? "Paused" : "Active",
+            updatedAt: new Date().toISOString(),
           }
         : campaign
-    );
+    ));
+  }, [campaigns, saveCampaigns]);
 
-    saveCampaigns(updatedCampaigns);
-  }
+  const deleteCampaign = useCallback((id) => {
+    saveCampaigns(campaigns.filter((campaign) => campaign.id !== id));
+  }, [campaigns, saveCampaigns]);
 
-  
-  function deleteCampaign(id) {
-    const updatedCampaigns = campaigns.filter(
-      (campaign) => campaign.id !== id
-    );
+  const value = useMemo(() => ({
+    campaigns,
+    addCampaign,
+    updateCampaign,
+    toggleCampaignStatus,
+    deleteCampaign,
+  }), [campaigns, addCampaign, updateCampaign, toggleCampaignStatus, deleteCampaign]);
 
-    saveCampaigns(updatedCampaigns);
-  }
-
-  return (
-    <CampaignContext.Provider
-      value={{
-        campaigns,
-        addCampaign,
-        updateCampaign,
-        toggleCampaignStatus,
-        deleteCampaign,
-      }}
-    >
-      {children}
-    </CampaignContext.Provider>
-  );
+  return <CampaignContext.Provider value={value}>{children}</CampaignContext.Provider>;
 }

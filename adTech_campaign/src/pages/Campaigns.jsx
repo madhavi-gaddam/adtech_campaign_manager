@@ -17,8 +17,12 @@ export default function Campaigns() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [sortBy, setSortBy] = useState("newest");
+  const [ageFilter, setAgeFilter] = useState("__all");
+  const [platformFilter, setPlatformFilter] = useState("All");
+  const [budgetSort, setBudgetSort] = useState("newest");
   const [campaignToDelete, setCampaignToDelete] = useState(null);
+  const ageGroups = [...new Set(campaigns.map((campaign) => campaign.ageGroup).filter(Boolean))];
+  const platforms = [...new Set(campaigns.map((campaign) => campaign.platform).filter(Boolean))];
 
   const filteredCampaigns = useMemo(() => {
     const filtered = campaigns.filter((campaign) => {
@@ -26,32 +30,31 @@ export default function Campaigns() {
       const nameMatch = campaignName
         .toLowerCase()
         .includes(searchText.toLowerCase());
+      const idMatch = String(campaign.id || "")
+        .toLowerCase()
+        .includes(searchText.toLowerCase());
       const statusMatch =
         statusFilter === "All" || campaign.status === statusFilter;
+      const ageMatch =
+        ageFilter === "__all" || campaign.ageGroup === ageFilter;
+      const platformMatch =
+        platformFilter === "All" || campaign.platform === platformFilter;
 
-      return nameMatch && statusMatch;
+      return (nameMatch || idMatch) && statusMatch && ageMatch && platformMatch;
     });
 
     return [...filtered].sort((firstCampaign, secondCampaign) => {
-      if (sortBy === "budgetHigh") {
+      if (budgetSort === "budgetHigh") {
         return secondCampaign.budget - firstCampaign.budget;
       }
 
-      if (sortBy === "budgetLow") {
+      if (budgetSort === "budgetLow") {
         return firstCampaign.budget - secondCampaign.budget;
-      }
-
-      if (sortBy === "name") {
-        const firstName = firstCampaign.campaignName || firstCampaign.name || "";
-        const secondName =
-          secondCampaign.campaignName || secondCampaign.name || "";
-
-        return firstName.localeCompare(secondName);
       }
 
       return String(secondCampaign.id).localeCompare(String(firstCampaign.id));
     });
-  }, [campaigns, searchText, sortBy, statusFilter]);
+  }, [ageFilter, budgetSort, campaigns, platformFilter, searchText, statusFilter]);
 
   function handleDelete(id) {
     const selectedCampaign = campaigns.find((campaign) => campaign.id === id);
@@ -86,10 +89,11 @@ export default function Campaigns() {
         }
       />
 
-      <div className="grid gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm md:grid-cols-[1fr_180px_180px]">
+      <div className="grid gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:grid-cols-2 xl:grid-cols-[minmax(240px,1fr)_160px_160px_180px_190px]">
         <Input
           value={searchText}
-          placeholder="Search campaigns"
+          placeholder="Search by campaign ID or name"
+          aria-label="Search campaigns by ID or name"
           onChange={(event) => setSearchText(event.target.value)}
         />
 
@@ -103,13 +107,28 @@ export default function Campaigns() {
         </SelectField>
 
         <SelectField
-          value={sortBy}
-          onChange={(event) => setSortBy(event.target.value)}
+          value={ageFilter}
+          onChange={(event) => setAgeFilter(event.target.value)}
         >
-          <option value="newest">Newest</option>
-          <option value="name">Name</option>
-          <option value="budgetHigh">Budget High</option>
-          <option value="budgetLow">Budget Low</option>
+          <option value="__all">All Ages</option>
+          {ageGroups.map((age) => <option key={age} value={age}>{age}</option>)}
+        </SelectField>
+
+        <SelectField
+          value={platformFilter}
+          onChange={(event) => setPlatformFilter(event.target.value)}
+        >
+          <option value="All">All Platforms</option>
+          {platforms.map((platform) => <option key={platform} value={platform}>{platform}</option>)}
+        </SelectField>
+
+        <SelectField
+          value={budgetSort}
+          onChange={(event) => setBudgetSort(event.target.value)}
+        >
+          <option value="newest">Newest First</option>
+          <option value="budgetLow">Budget: Low to High</option>
+          <option value="budgetHigh">Budget: High to Low</option>
         </SelectField>
       </div>
 

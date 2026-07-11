@@ -10,10 +10,12 @@ const linkClass = ({ isActive }) =>
       : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
   }`
 
-export function PageShell({ children }) {
+export function PageShell({ children, rows }) {
+  const isDashboard = rows === 'dashboard'
+
   return (
-    <div className="min-h-screen overflow-x-hidden bg-gray-100">
-      <div className="flex min-h-screen min-w-0">
+    <div className={`${isDashboard ? 'lg:h-screen lg:overflow-hidden' : 'min-h-screen'} overflow-x-hidden bg-gray-100`}>
+      <div className={`flex min-w-0 ${isDashboard ? 'lg:h-screen' : 'min-h-screen'}`}>
         <aside className="sticky top-0 h-screen w-64 shrink-0 border-r border-gray-200 bg-white px-4 py-5">
           <BrandLockup />
 
@@ -35,8 +37,8 @@ export function PageShell({ children }) {
           </nav>
         </aside>
 
-        <main className="min-w-0 flex-1 px-6 py-6">
-          <div className="mx-auto grid w-full max-w-7xl min-w-0 gap-5">
+        <main className={`min-w-0 flex-1 px-4 py-4 sm:px-6 ${isDashboard ? 'lg:h-screen' : ''}`}>
+          <div className={`mx-auto grid w-full max-w-7xl min-w-0 gap-4 ${isDashboard ? 'lg:h-full lg:grid-rows-[auto_auto_minmax(0,1fr)]' : ''}`}>
             {children}
           </div>
         </main>

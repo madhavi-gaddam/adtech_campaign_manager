@@ -24,7 +24,7 @@ export function CampaignRow({
       <td className="px-4 py-5 text-base font-extrabold text-gray-950">
         <Link
           to={`/campaigns/${campaign.id}`}
-          className="hover:text-blue-700 hover:underline"
+          className="block max-w-64 whitespace-normal break-words leading-snug hover:text-blue-700 hover:underline"
         >
           {campaignName}
         </Link>

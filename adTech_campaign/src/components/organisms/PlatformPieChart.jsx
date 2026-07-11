@@ -1,110 +1,110 @@
-import {
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-  Label,
-} from "recharts";
+import { useId, useState } from "react";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
-const COLORS = [
-  "#3B82F6",
-  "#22C55E",
-  "#F59E0B",
-  "#EF4444",
-  "#8B5CF6",
-  "#06B6D4",
-];
+import { formatCurrency } from "../../domain/campaign";
 
-export function PlatformPieChart({ campaigns }) {
-  const platformData = campaigns.reduce((acc, campaign) => {
-    const existingPlatform = acc.find(
-      (item) => item.platform === campaign.platform
-    );
+const PLATFORM_COLORS = {
+  Facebook: "#4F46E5",
+  "Google Ads": "#16A34A",
+  "Google Search": "#16A34A",
+  Instagram: "#DB2777",
+  LinkedIn: "#0891B2",
+  YouTube: "#DC2626",
+};
+const FALLBACK_COLORS = ["#8B5CF6", "#14B8A6", "#F59E0B", "#64748B"];
 
-    if (existingPlatform) {
-      existingPlatform.value += 1;
-    } else {
-      acc.push({
-        platform: campaign.platform,
-        value: 1,
-      });
-    }
+function getColor(platform, index) {
+  return PLATFORM_COLORS[platform] || FALLBACK_COLORS[index % FALLBACK_COLORS.length];
+}
 
-    return acc;
-  }, []);
+function BudgetTooltip({ active, payload, total }) {
+  if (!active || !payload?.length) return null;
 
-  const totalCampaigns = platformData.reduce(
-    (sum, item) => sum + item.value,
-    0
-  );
-
-  if (platformData.length === 0) {
-    return (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">
-          Campaigns by Platform
-        </h2>
-
-        <div className="flex h-80 items-center justify-center text-gray-500">
-          No campaign data available.
-        </div>
-      </div>
-    );
-  }
+  const item = payload[0].payload;
+  const percentage = total ? ((item.budget / total) * 100).toFixed(1) : "0.0";
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-      <h2 className="mb-4 text-lg font-semibold text-gray-900">
-        Campaigns by Platform
-      </h2>
-
-      <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={platformData}
-              dataKey="value"
-              nameKey="platform"
-              cx="50%"
-              cy="50%"
-              innerRadius={70}
-              outerRadius={110}
-              paddingAngle={3}
-              cornerRadius={6}
-            >
-              <Label
-                value={`${totalCampaigns}\nCampaigns`}
-                position="center"
-                style={{
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  fill: "#111827",
-                  whiteSpace: "pre-line",
-                  textAnchor: "middle",
-                }}
-              />
-
-              {platformData.map((entry, index) => (
-                <Cell
-                  key={entry.platform}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-
-            <Tooltip
-              formatter={(value, name) => [
-                `${value} Campaign${value > 1 ? "s" : ""}`,
-                name,
-              ]}
-            />
-
-            <Legend verticalAlign="bottom" />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+    <div className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm shadow-lg">
+      <p className="font-semibold text-gray-900">{item.platform}</p>
+      <p className="text-gray-600">{formatCurrency(item.budget)} · {percentage}%</p>
     </div>
+  );
+}
+
+export function PlatformPieChart({ campaigns }) {
+  const titleId = useId();
+  const [status, setStatus] = useState("All");
+  const [ageGroup, setAgeGroup] = useState("All");
+  const ageGroups = [...new Set(campaigns.map((campaign) => campaign.ageGroup).filter(Boolean))];
+  const filteredCampaigns = campaigns.filter(
+    (campaign) =>
+      (status === "All" || campaign.status === status) &&
+      (ageGroup === "All" || campaign.ageGroup === ageGroup)
+  );
+  const data = Object.values(
+    filteredCampaigns.reduce((platforms, campaign) => {
+      const platform = campaign.platform || "Unspecified";
+      platforms[platform] ??= { platform, budget: 0 };
+      platforms[platform].budget += Number(campaign.budget) || 0;
+      return platforms;
+    }, {})
+  ).filter((item) => item.budget > 0);
+  const total = data.reduce((sum, item) => sum + item.budget, 0);
+
+  return (
+    <section className="flex h-full min-h-0 flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm" aria-labelledby={titleId}>
+      <h2 id={titleId} className="text-lg font-bold text-gray-900">Budget by Platform</h2>
+
+      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="text-xs font-bold uppercase tracking-wide text-gray-500">
+          Status
+          <select value={status} onChange={(event) => setStatus(event.target.value)} className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-normal normal-case tracking-normal text-gray-900 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+            <option value="All">All</option>
+            <option value="Active">Active</option>
+            <option value="Paused">Paused</option>
+          </select>
+        </label>
+
+        <label className="text-xs font-bold uppercase tracking-wide text-gray-500">
+          Age
+          <select value={ageGroup} onChange={(event) => setAgeGroup(event.target.value)} className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-normal normal-case tracking-normal text-gray-900 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+            <option value="All">All</option>
+            {ageGroups.filter((age) => age !== "All").map((age) => <option key={age} value={age}>{age}</option>)}
+          </select>
+        </label>
+      </div>
+
+      <p className="sr-only">Total budget {formatCurrency(total)}. {data.map((item) => `${item.platform}: ${formatCurrency(item.budget)}`).join("; ")}</p>
+      {!data.length ? (
+        <div className="flex h-64 items-center justify-center text-gray-500">No budget data available for these filters.</div>
+      ) : (
+        <>
+          <div className="h-52 shrink-0" aria-hidden="true">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={data} dataKey="budget" nameKey="platform" cx="50%" cy="50%" innerRadius={55} outerRadius={82} paddingAngle={1} cornerRadius={0} stroke="#fff" strokeWidth={2}>
+                  {data.map((item, index) => <Cell key={item.platform} fill={getColor(item.platform, index)} />)}
+                </Pie>
+                <Tooltip content={<BudgetTooltip total={total} />} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          <ul className="flex flex-wrap gap-x-4 gap-y-2 border-t border-gray-200 pt-3">
+            {data.map((item, index) => (
+              <li key={item.platform} className="flex min-w-0 items-center gap-1.5 text-xs">
+                <div className="flex items-center gap-1.5 font-semibold text-gray-900">
+                  <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: getColor(item.platform, index) }} />
+                  {item.platform}
+                </div>
+                <p className="hidden">
+                  {formatCurrency(item.budget)} · {((item.budget / total) * 100).toFixed(1)}%
+                </p>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
   );
 }
