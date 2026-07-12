@@ -20,7 +20,7 @@ export function Button({
   return (
     <Component
       type={Component === "button" ? type : undefined}
-      className={`inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-bold transition ${buttonStyle} ${className}`}
+      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-bold transition ${buttonStyle} ${className}`}
       {...props}
     >
       {children}

@@ -1,6 +1,4 @@
 
-
-
 export const platformOptions = [
   "Facebook",
   "Google Ads",

@@ -14,7 +14,7 @@ export function CampaignDetailsCard({ campaign }) {
     : "Not updated yet";
 
   return (
-    <div className="max-w-3xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="w-full max-w-3xl rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
 
       <h2 className="mb-6 text-2xl font-bold">
         Campaign Details
@@ -60,16 +60,18 @@ export function CampaignDetailsCard({ campaign }) {
         value={updatedDate}
       />
 
-      <div className="mt-8 flex gap-4">
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
 
         <Button
           variant="secondary"
+          className="w-full sm:w-auto"
           onClick={() => navigate("/campaigns")}
         >
           Back
         </Button>
 
         <Button
+          className="w-full sm:w-auto"
           onClick={() =>
             navigate(`/campaigns/edit/${campaign.id}`)
           }

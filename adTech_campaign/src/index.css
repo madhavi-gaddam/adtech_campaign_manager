@@ -123,10 +123,17 @@
     }
   body {
     @apply bg-background text-foreground;
+    min-width: 320px;
     }
   html {
     @apply font-sans;
     }
+}
+
+@media (max-width: 639px) {
+  .campaign-table-scroll {
+    min-height: 240px;
+  }
 }
 
 .campaign-table-scroll {

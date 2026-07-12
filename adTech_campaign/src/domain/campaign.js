@@ -1,5 +1,3 @@
-// src/domain/campaign.js
-
 export function formatCurrency(amount) {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',

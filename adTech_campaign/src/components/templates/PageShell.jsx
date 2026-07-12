@@ -17,8 +17,27 @@ export function PageShell({ children, rows }) {
 
   return (
     <div className={`${isDashboard ? 'lg:h-screen lg:overflow-hidden' : 'min-h-screen'} overflow-x-hidden bg-gray-100`}>
+      <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/95 px-4 py-3 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95 md:hidden">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+          <BrandLockup />
+          <button
+            type="button"
+            onClick={() => setTheme(isDark ? 'light' : 'dark')}
+            aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-gray-300 text-gray-700 transition hover:bg-gray-100 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+          >
+            {isDark ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
+          </button>
+        </div>
+        <nav className="mx-auto mt-3 grid max-w-7xl grid-cols-3 gap-2" aria-label="Main navigation">
+          <NavLink to="/" end aria-label="Dashboard" title="Dashboard" className={({ isActive }) => `${linkClass({ isActive })} justify-center px-3`}><LayoutDashboard size={18} aria-hidden="true" /><span className="sr-only">Dashboard</span></NavLink>
+          <NavLink to="/campaigns" aria-label="Campaigns" title="Campaigns" className={({ isActive }) => `${linkClass({ isActive })} justify-center px-3`}><Megaphone size={18} aria-hidden="true" /><span className="sr-only">Campaigns</span></NavLink>
+          <NavLink to="/campaigns/create" aria-label="Create campaign" title="Create campaign" className={({ isActive }) => `${linkClass({ isActive })} justify-center px-3`}><PlusCircle size={18} aria-hidden="true" /><span className="sr-only">Create campaign</span></NavLink>
+        </nav>
+      </header>
+
       <div className={`flex min-w-0 ${isDashboard ? 'lg:h-screen' : 'min-h-screen'}`}>
-        <aside className="sticky top-0 h-screen w-64 shrink-0 border-r border-gray-200 bg-white px-4 py-5">
+        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-gray-200 bg-white px-4 py-5 md:block">
           <BrandLockup />
 
           <nav className="mt-8 grid gap-2">
@@ -56,7 +75,7 @@ export function PageShell({ children, rows }) {
           </button>
         </aside>
 
-        <main className={`min-w-0 flex-1 px-4 py-4 sm:px-6 ${isDashboard ? 'lg:h-screen' : ''}`}>
+        <main className={`min-w-0 flex-1 px-4 py-5 sm:px-6 sm:py-6 ${isDashboard ? 'lg:h-screen' : ''}`}>
           <div className={`mx-auto grid w-full max-w-7xl min-w-0 gap-4 ${isDashboard ? 'lg:h-full lg:grid-rows-[auto_auto_minmax(0,1fr)]' : ''}`}>
             {children}
           </div>

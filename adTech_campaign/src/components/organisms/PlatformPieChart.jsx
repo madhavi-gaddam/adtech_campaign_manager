@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { Cell, Label, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 import { formatCurrency } from "../../domain/campaign";
 
@@ -54,7 +54,7 @@ export function PlatformPieChart({ campaigns }) {
 
   return (
     <section className="flex h-full min-h-0 flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm" aria-labelledby={titleId}>
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 id={titleId} className="text-lg font-bold text-gray-900">Budget by Platform</h2>
         {hasFilters && (
           <button type="button" onClick={() => { setStatus("All"); setAgeGroup("All"); }} className="text-xs font-semibold text-blue-600 hover:underline">
@@ -87,11 +87,10 @@ export function PlatformPieChart({ campaigns }) {
         <div className="flex h-64 items-center justify-center text-gray-500">No budget data available for these filters.</div>
       ) : (
         <>
-          <div className="h-48 shrink-0 sm:h-56" aria-hidden="true">
+          <div className="h-52 shrink-0 sm:h-56" aria-hidden="true">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={data} dataKey="budget" nameKey="platform" cx="50%" cy="50%" innerRadius="45%" outerRadius="70%" paddingAngle={0} cornerRadius={0} stroke="none">
-                  <Label value={formatCurrency(total)} position="center" style={{ fontSize: 13, fontWeight: 700, fill: "var(--foreground)" }} />
+                <Pie data={data} dataKey="budget" nameKey="platform" cx="50%" cy="50%" innerRadius="50%" outerRadius="74%" paddingAngle={2} cornerRadius={2} stroke="none">
                   {data.map((item, index) => <Cell key={item.platform} fill={getColor(item.platform, index)} />)}
                 </Pie>
                 <Tooltip content={<BudgetTooltip total={total} />} />

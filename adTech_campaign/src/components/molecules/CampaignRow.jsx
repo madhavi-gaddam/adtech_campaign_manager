@@ -20,7 +20,7 @@ export function CampaignRow({
         </span>
       </td>
 
-      <td className="px-4 py-5 text-base font-extrabold text-gray-950">
+      <td className="px-4 py-4 text-sm font-extrabold text-gray-950 sm:text-base">
         <Link
           to={`/campaigns/${campaign.id}`}
           className="block max-w-64 whitespace-normal break-words leading-snug hover:text-blue-700 hover:underline"
@@ -33,20 +33,20 @@ export function CampaignRow({
         <StatusBadge status={campaign.status} />
       </td>
 
-      <td className="px-4 py-5 text-base font-extrabold text-gray-950">
+      <td className="px-4 py-4 text-sm font-extrabold text-gray-950 sm:text-base">
         {campaign.platform}
       </td>
 
-      <td className="px-4 py-5 text-base text-gray-950">
+      <td className="px-4 py-4 text-sm text-gray-950 sm:text-base">
         {campaign.ageGroup || "All"}
       </td>
 
-      <td className="px-4 py-5 text-base text-gray-950">
+      <td className="px-4 py-4 text-sm text-gray-950 sm:text-base">
         {formatCurrency(campaign.budget)}
       </td>
 
       <td className="px-4 py-5">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             aria-label={isActive ? "Pause campaign" : "Activate campaign"}

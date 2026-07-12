@@ -81,7 +81,7 @@ export function CampaignForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm" noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-2xl rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6" noValidate>
       <FormField label="Campaign Name" htmlFor="campaignName">
         <Input
           id="campaignName"

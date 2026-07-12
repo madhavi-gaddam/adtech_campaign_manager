@@ -13,8 +13,8 @@ export function CampaignTable({ campaigns, onDelete, onToggleStatus, onEdit, emp
 
   return (
     <div className="w-full min-w-0 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-      <div className="campaign-table-scroll max-h-[calc(100vh-280px)] min-h-[320px] max-w-full overflow-auto">
-        <table className="w-full min-w-[1120px] table-fixed border-collapse">
+      <div className="campaign-table-scroll max-h-[calc(100vh-240px)] min-h-[280px] max-w-full overflow-auto overscroll-contain">
+        <table className="w-full min-w-[940px] table-fixed border-collapse">
         <thead className="sticky top-0 z-10 border-b border-gray-200 bg-gray-100 text-xs uppercase text-gray-500">
           <tr>
             <th className="w-[10%] px-4 py-4 text-left">Campaign ID</th>

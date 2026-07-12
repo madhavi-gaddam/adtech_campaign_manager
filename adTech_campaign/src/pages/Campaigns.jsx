@@ -134,7 +134,7 @@ export default function Campaigns() {
         }
       />
 
-      <div className="grid gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_150px_150px_170px_180px_auto]">
+      <div className="grid gap-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm sm:grid-cols-2 sm:p-4 xl:grid-cols-[minmax(220px,1fr)_150px_150px_170px_180px_auto]">
         <Input
           value={searchText}
           placeholder="Search by campaign ID or name"
@@ -188,7 +188,7 @@ export default function Campaigns() {
       />
       {campaignToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title" aria-describedby="delete-dialog-description" className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+          <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title" aria-describedby="delete-dialog-description" className="w-full max-w-md rounded-lg bg-white p-4 shadow-xl sm:p-6">
             <h2 id="delete-dialog-title" className="text-lg font-bold text-gray-900">
               Delete campaign?
             </h2>
@@ -203,15 +203,16 @@ export default function Campaigns() {
               ? This action cannot be undone.
             </p>
 
-            <div className="mt-6 flex justify-end gap-3">
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <Button
                 variant="secondary"
+                className="w-full sm:w-auto"
                 onClick={closeDeleteDialog}
               >
                 Cancel
               </Button>
 
-              <Button variant="danger" onClick={confirmDelete}>
+              <Button variant="danger" className="w-full sm:w-auto" onClick={confirmDelete}>
                 Delete
               </Button>
             </div>
