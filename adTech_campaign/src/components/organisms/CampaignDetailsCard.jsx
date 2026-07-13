@@ -64,7 +64,7 @@ export function CampaignDetailsCard({ campaign }) {
 
         <Button
           variant="secondary"
-          className="w-full sm:w-auto"
+          className="campaign-details-back-button w-full sm:w-auto"
           onClick={() => navigate("/campaigns")}
         >
           Back

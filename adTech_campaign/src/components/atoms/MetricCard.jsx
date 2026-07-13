@@ -9,7 +9,7 @@ export function MetricCard({ icon, label, value }) {
 
       <p className="text-sm font-bold text-gray-500">{label}</p>
 
-      <h2 className="mt-1 text-xl font-extrabold text-gray-900">
+      <h2 className="mt-1 min-w-0 break-words text-lg leading-tight font-extrabold text-gray-900 lg:text-xl">
         {value}
       </h2>
     </div>

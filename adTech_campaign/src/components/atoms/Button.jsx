@@ -12,7 +12,7 @@ export function Button({
     buttonStyle = "bg-blue-600 text-white hover:bg-blue-700";
   } else if (variant === "secondary") {
     buttonStyle =
-      "bg-white text-gray-800 border border-gray-300 hover:bg-gray-50";
+      "bg-white text-gray-800 border border-gray-300 hover:bg-gray-50 dark:text-slate-100";
   } else if (variant === "danger") {
     buttonStyle = "bg-red-600 text-white hover:bg-red-700";
   }

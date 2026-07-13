@@ -190,6 +190,17 @@ html.dark .border-gray-300 {
   border-color: #475569;
 }
 
+/* Keep the secondary Back action distinct from the details card in dark mode. */
+html.dark .campaign-details-back-button {
+  background-color: #334155;
+  border-color: #64748b;
+  color: #f8fafc;
+}
+
+html.dark .campaign-details-back-button:hover {
+  background-color: #475569;
+}
+
 html.dark input,
 html.dark select {
   background-color: #111827;
