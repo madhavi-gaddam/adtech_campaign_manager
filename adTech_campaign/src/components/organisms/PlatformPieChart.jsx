@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { Cell, Label, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 import { formatCurrency } from "../../domain/campaign";
 
@@ -12,6 +12,46 @@ const PLATFORM_COLORS = {
   YouTube: "#DC2626",
 };
 const FALLBACK_COLORS = ["#8B5CF6", "#14B8A6", "#F59E0B", "#64748B"];
+
+const PLATFORM_NAMES = Object.fromEntries(
+  Object.keys(PLATFORM_COLORS).map((platform) => [platform.toLowerCase(), platform])
+);
+
+function normalizePlatform(platform) {
+  const value = String(platform || "").trim();
+  return PLATFORM_NAMES[value.toLowerCase()] || value || "Unspecified";
+}
+
+function formatCompactBudget(amount) {
+  const value = Number(amount) || 0;
+  const units = [
+    { value: 10_000_000, suffix: "Cr" },
+    { value: 100_000, suffix: "L" },
+    { value: 1_000, suffix: "K" },
+  ];
+  const unit = units.find(({ value: unitValue }) => Math.abs(value) >= unitValue);
+
+  if (!unit) return formatCurrency(value);
+
+  const compactValue = value / unit.value;
+  const maximumFractionDigits = Math.abs(compactValue) >= 10 ? 0 : 1;
+  return `₹${compactValue.toLocaleString("en-IN", { maximumFractionDigits })} ${unit.suffix}`;
+}
+
+function DonutCenterLabel({ viewBox, total }) {
+  if (!viewBox) return null;
+
+  return (
+    <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
+      <tspan x={viewBox.cx} dy="-0.45em" className="fill-gray-900 text-base font-extrabold dark:fill-slate-100">
+        {formatCompactBudget(total)}
+      </tspan>
+      <tspan x={viewBox.cx} dy="1.7em" className="fill-gray-500 text-[10px] font-semibold uppercase tracking-wide dark:fill-slate-400">
+        Total Budget
+      </tspan>
+    </text>
+  );
+}
 
 function getColor(platform, index) {
   return PLATFORM_COLORS[platform] || FALLBACK_COLORS[index % FALLBACK_COLORS.length];
@@ -43,7 +83,7 @@ export function PlatformPieChart({ campaigns }) {
   );
   const data = Object.values(
     filteredCampaigns.reduce((platforms, campaign) => {
-      const platform = campaign.platform || "Unspecified";
+      const platform = normalizePlatform(campaign.platform);
       platforms[platform] ??= { platform, budget: 0 };
       platforms[platform].budget += Number(campaign.budget) || 0;
       return platforms;
@@ -87,11 +127,12 @@ export function PlatformPieChart({ campaigns }) {
         <div className="flex h-64 items-center justify-center text-gray-500">No budget data available for these filters.</div>
       ) : (
         <>
-          <div className="h-52 shrink-0 sm:h-56" aria-hidden="true">
+          <div className="chart-canvas h-52 shrink-0 sm:h-56" aria-hidden="true">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={data} dataKey="budget" nameKey="platform" cx="50%" cy="50%" innerRadius="50%" outerRadius="74%" paddingAngle={2} cornerRadius={2} stroke="none">
+                <Pie data={data} dataKey="budget" nameKey="platform" cx="50%" cy="50%" innerRadius="50%" outerRadius="74%" minAngle={3} paddingAngle={1} cornerRadius={2} stroke="none">
                   {data.map((item, index) => <Cell key={item.platform} fill={getColor(item.platform, index)} />)}
+                  <Label content={(props) => <DonutCenterLabel {...props} total={total} />} />
                 </Pie>
                 <Tooltip content={<BudgetTooltip total={total} />} />
               </PieChart>

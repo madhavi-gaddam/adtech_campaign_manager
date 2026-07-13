@@ -61,15 +61,14 @@ export function PageShell({ children, rows }) {
             type="button"
             onClick={() => setTheme(isDark ? 'light' : 'dark')}
             aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
-            className="absolute bottom-5 left-4 right-4 flex items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-700 transition hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="absolute bottom-5 left-4 right-4 flex items-center justify-center px-3 py-2 text-gray-700 transition hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           >
-            <span>Theme</span>
             <span className="flex rounded-md bg-gray-100 p-0.5" aria-hidden="true">
-              <span className={`flex h-7 w-7 items-center justify-center rounded ${!isDark ? 'bg-white text-amber-500 shadow-sm' : 'text-gray-500'}`}>
-                <Sun size={16} />
+              <span className={`flex h-9 w-9 items-center justify-center rounded ${!isDark ? 'bg-white text-amber-500 shadow-sm' : 'text-gray-500'}`}>
+                <Sun size={20} />
               </span>
-              <span className={`flex h-7 w-7 items-center justify-center rounded ${isDark ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500'}`}>
-                <Moon size={15} />
+              <span className={`flex h-9 w-9 items-center justify-center rounded ${isDark ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500'}`}>
+                <Moon size={19} />
               </span>
             </span>
           </button>

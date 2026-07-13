@@ -49,7 +49,7 @@ export function BudgetBarChart({ campaigns }) {
         Top 5 Active Campaigns by Budget
       </h2>
 
-      <div className="h-72 min-w-0 flex-1 sm:h-72 lg:h-auto">
+      <div className="chart-canvas h-72 min-w-0 flex-1 sm:h-72 lg:h-auto">
         <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={topCampaigns}
