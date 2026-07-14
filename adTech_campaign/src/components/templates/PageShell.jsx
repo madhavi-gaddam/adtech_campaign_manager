@@ -16,8 +16,8 @@ export function PageShell({ children, rows }) {
   const { isDark, setTheme } = useTheme()
 
   return (
-    <div className={`${isDashboard ? 'lg:h-screen lg:overflow-hidden' : 'min-h-screen'} overflow-x-hidden bg-gray-100`}>
-      <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/95 px-4 py-3 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95 lg:hidden">
+    <div className={`${isDashboard ? 'lg:h-screen lg:overflow-hidden' : 'min-h-screen'} overflow-x-clip bg-gray-100`}>
+      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 px-4 py-3 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95 lg:hidden">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
           <BrandLockup />
           <button

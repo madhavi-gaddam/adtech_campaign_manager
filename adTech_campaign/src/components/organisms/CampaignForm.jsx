@@ -1,10 +1,6 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useContext } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { z } from "zod";
-
 import { CampaignContext } from "../../context/CampaignContextValue";
 import { ageGroupOptions, platformOptions } from "../../data/campaignOptions";
 import { Button } from "../atoms/Button";
@@ -15,30 +11,9 @@ import { FormField } from "../molecules/FormField";
 const MAX_NAME_LENGTH = 30;
 const MAX_BUDGET = 100_000_000;
 
-function createCampaignSchema(campaigns, currentId) {
-  return z.object({
-    campaignName: z.string()
-      .trim()
-      .min(1, "Campaign name is required.")
-      .max(MAX_NAME_LENGTH, `Campaign name cannot exceed ${MAX_NAME_LENGTH} characters.`)
-      .refine(
-        (name) => !campaigns.some((campaign) =>
-          campaign.id !== currentId &&
-          String(campaign.campaignName || campaign.name || "").trim().toLowerCase() === name.toLowerCase()
-        ),
-        "A campaign with this name already exists."
-      ),
-    platform: z.string().min(1, "Please select a platform."),
-    ageGroup: z.string().min(1, "Please select an age group."),
-    budget: z.coerce.number({ error: "Budget is required." })
-      .positive("Budget must be greater than 0.")
-      .max(MAX_BUDGET, `Budget cannot exceed ₹${MAX_BUDGET.toLocaleString("en-IN")}.`),
-  });
-}
-
 function FieldError({ error }) {
   if (!error) return null;
-  return <p className="mt-1 text-sm font-medium text-red-600">{error.message}</p>;
+  return <p className="mt-1 text-sm font-medium text-red-600">{error}</p>;
 }
 
 export function CampaignForm() {
@@ -47,31 +22,67 @@ export function CampaignForm() {
   const { id } = useParams();
   const editCampaign = campaigns.find((campaign) => campaign.id === id);
   const isEditMode = Boolean(id);
-  const schema = createCampaignSchema(campaigns, id);
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(schema),
-    mode: "onChange",
-    defaultValues: {
-      campaignName: editCampaign?.campaignName || editCampaign?.name || "",
-      platform: editCampaign?.platform || "",
-      ageGroup: editCampaign?.ageGroup || "",
-      budget: editCampaign?.budget || "",
-    },
+  const [values, setValues] = useState({
+    campaignName: editCampaign?.campaignName || editCampaign?.name || "",
+    platform: editCampaign?.platform || "",
+    ageGroup: editCampaign?.ageGroup || "",
+    budget: editCampaign?.budget || "",
   });
-  const campaignNameLength = useWatch({ control, name: "campaignName" })?.length || 0;
+  const [errors, setErrors] = useState({});
 
-  function onSubmit(values) {
+  function validate() {
+    const nextErrors = {};
+    const campaignName = values.campaignName.trim();
+    const budget = Number(values.budget);
+
+    if (!campaignName) {
+      nextErrors.campaignName = "Campaign name is required.";
+    } else if (campaignName.length > MAX_NAME_LENGTH) {
+      nextErrors.campaignName = `Campaign name cannot exceed ${MAX_NAME_LENGTH} characters.`;
+    } else if (campaigns.some((campaign) =>
+      campaign.id !== id &&
+      String(campaign.campaignName || campaign.name || "").trim().toLowerCase() === campaignName.toLowerCase()
+    )) {
+      nextErrors.campaignName = "A campaign with this name already exists.";
+    }
+
+    if (!values.platform) nextErrors.platform = "Please select a platform.";
+    if (!values.ageGroup) nextErrors.ageGroup = "Please select an age group.";
+
+    if (!values.budget) {
+      nextErrors.budget = "Budget is required.";
+    } else if (!Number.isFinite(budget) || budget <= 0) {
+      nextErrors.budget = "Budget must be greater than 0.";
+    } else if (budget > MAX_BUDGET) {
+      nextErrors.budget = `Budget cannot exceed ₹${MAX_BUDGET.toLocaleString("en-IN")}.`;
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  }
+
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setValues((currentValues) => ({ ...currentValues, [name]: value }));
+    setErrors((currentErrors) => ({ ...currentErrors, [name]: undefined }));
+  }
+
+  function onSubmit(event) {
+    event.preventDefault();
+    if (!validate()) return;
+
+    const campaignValues = {
+      ...values,
+      campaignName: values.campaignName.trim(),
+      budget: Number(values.budget),
+    };
+
     try {
       if (isEditMode) {
-        updateCampaign(id, values);
+        updateCampaign(id, campaignValues);
         toast.success("Campaign updated successfully.");
       } else {
-        addCampaign(values);
+        addCampaign(campaignValues);
         toast.success("Campaign created successfully.");
       }
       navigate("/campaigns");
@@ -81,23 +92,25 @@ export function CampaignForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-2xl rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6" noValidate>
+    <form onSubmit={onSubmit} className="w-full max-w-2xl rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6" noValidate>
       <FormField label="Campaign Name" htmlFor="campaignName">
         <Input
           id="campaignName"
+          name="campaignName"
+          value={values.campaignName}
+          onChange={handleChange}
           placeholder="Enter campaign name"
           maxLength={MAX_NAME_LENGTH}
           aria-invalid={Boolean(errors.campaignName)}
-          {...register("campaignName")}
         />
         <p className="mt-1 text-right text-xs text-gray-500">
-          {campaignNameLength}/{MAX_NAME_LENGTH} characters
+          {values.campaignName.length}/{MAX_NAME_LENGTH} characters
         </p>
         <FieldError error={errors.campaignName} />
       </FormField>
 
       <FormField label="Platform" htmlFor="platform">
-        <SelectField id="platform" aria-invalid={Boolean(errors.platform)} {...register("platform")}>
+        <SelectField id="platform" name="platform" value={values.platform} onChange={handleChange} aria-invalid={Boolean(errors.platform)}>
           <option value="" disabled>Select platform</option>
           {platformOptions.map((platform) => <option key={platform} value={platform}>{platform}</option>)}
         </SelectField>
@@ -105,7 +118,7 @@ export function CampaignForm() {
       </FormField>
 
       <FormField label="Age Group" htmlFor="ageGroup">
-        <SelectField id="ageGroup" aria-invalid={Boolean(errors.ageGroup)} {...register("ageGroup")}>
+        <SelectField id="ageGroup" name="ageGroup" value={values.ageGroup} onChange={handleChange} aria-invalid={Boolean(errors.ageGroup)}>
           <option value="" disabled>Select age group</option>
           {ageGroupOptions.map((ageGroup) => <option key={ageGroup} value={ageGroup}>{ageGroup}</option>)}
         </SelectField>
@@ -116,12 +129,14 @@ export function CampaignForm() {
         <Input
           type="number"
           id="budget"
-          placeholder="Enter budget"
+          name="budget"
+          value={values.budget}
+          onChange={handleChange}
+          placeholder="Enter budget in rupees"
           min="1"
           max={MAX_BUDGET}
           step="1"
           aria-invalid={Boolean(errors.budget)}
-          {...register("budget")}
         />
         <FieldError error={errors.budget} />
       </FormField>
