@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { AuthContext } from "../../context/AuthContextValue";
 import { CampaignContext } from "../../context/CampaignContextValue";
 import { ageGroupOptions, platformOptions } from "../../data/campaignOptions";
 import { Button } from "../atoms/Button";
@@ -17,11 +18,18 @@ function FieldError({ error }) {
 }
 
 export function CampaignForm() {
-  const { campaigns, addCampaign, updateCampaign } = useContext(CampaignContext);
+  const { users, currentUser } = useContext(AuthContext);
+  const { campaigns, allCampaigns, addCampaign, addCampaignAsAdmin, updateCampaign, updateCampaignAsAdmin } = useContext(CampaignContext);
   const navigate = useNavigate();
-  const { id } = useParams();
-  const editCampaign = campaigns.find((campaign) => campaign.id === id);
+  const { id, userId } = useParams();
+  const isAdminMode = Boolean(userId) && ["Admin", "Super Admin"].includes(currentUser?.role);
+  const selectedUser = isAdminMode ? users.find((user) => user.id === userId) : null;
+  const availableCampaigns = isAdminMode ? allCampaigns : campaigns;
+  const editCampaign = availableCampaigns.find((campaign) => campaign.id === id);
   const isEditMode = Boolean(id);
+  const ownerCampaigns = isAdminMode
+    ? allCampaigns.filter((campaign) => campaign.ownerId === (editCampaign?.ownerId || userId))
+    : campaigns;
   const [values, setValues] = useState({
     campaignName: editCampaign?.campaignName || editCampaign?.name || "",
     platform: editCampaign?.platform || "",
@@ -45,7 +53,7 @@ export function CampaignForm() {
       nextErrors.campaignName = "Campaign name is required.";
     } else if (campaignName.length > MAX_NAME_LENGTH) {
       nextErrors.campaignName = `Campaign name cannot exceed ${MAX_NAME_LENGTH} characters.`;
-    } else if (campaigns.some((campaign) =>
+    } else if (ownerCampaigns.some((campaign) =>
       campaign.id !== id &&
       String(campaign.campaignName || campaign.name || "").trim().toLowerCase() === campaignName.toLowerCase()
     )) {
@@ -85,13 +93,23 @@ export function CampaignForm() {
 
     try {
       if (isEditMode) {
-        updateCampaign(id, campaignValues);
+        if (isAdminMode) {
+          const updated = updateCampaignAsAdmin(id, campaignValues);
+          if (!updated) throw new Error("Only admins can edit this campaign.");
+        } else {
+          updateCampaign(id, campaignValues);
+        }
         toast.success("Campaign updated successfully.");
       } else {
-        addCampaign(campaignValues);
+        if (isAdminMode) {
+          const created = addCampaignAsAdmin(selectedUser, campaignValues);
+          if (!created) throw new Error("Only admins can create campaigns for another user.");
+        } else {
+          addCampaign(campaignValues);
+        }
         toast.success("Campaign created successfully.");
       }
-      navigate("/campaigns");
+      navigate(isAdminMode ? `/admin/users/${userId}` : "/campaigns");
     } catch (error) {
       toast.error(error.message || (isEditMode ? "Unable to update campaign." : "Unable to create campaign."));
     }
@@ -161,8 +179,8 @@ export function CampaignForm() {
         <Button type="submit" className="w-full">
           {isEditMode ? "Update Campaign" : "Create Campaign"}
         </Button>
-        {isEditMode && (
-          <Button type="button" variant="secondary" className="w-full" onClick={() => navigate("/campaigns")}>
+        {(isEditMode || isAdminMode) && (
+          <Button type="button" variant="secondary" className="w-full" onClick={() => navigate(isAdminMode ? `/admin/users/${userId}` : "/campaigns")}>
             Cancel
           </Button>
         )}

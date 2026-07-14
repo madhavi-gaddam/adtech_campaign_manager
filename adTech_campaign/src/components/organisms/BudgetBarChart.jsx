@@ -35,7 +35,6 @@ function CampaignBudgetTooltip({ active, payload }) {
 
 export function BudgetBarChart({ campaigns }) {
   const topCampaigns = campaigns
-    .filter((campaign) => campaign.status === "Active")
     .sort((a, b) => Number(b.budget || 0) - Number(a.budget || 0))
     .slice(0, 5)
     .map((campaign) => {
@@ -53,7 +52,7 @@ export function BudgetBarChart({ campaigns }) {
   if (topCampaigns.length === 0) {
     return (
       <div className="rounded-lg border bg-white p-6 text-center text-gray-500">
-        No active campaigns available.
+        No campaigns available.
       </div>
     );
   }
@@ -61,7 +60,7 @@ export function BudgetBarChart({ campaigns }) {
   return (
     <div className="flex min-h-[320px] min-w-0 flex-col rounded-lg bg-white p-4 shadow lg:h-full lg:min-h-0">
       <h2 className="mb-3 text-lg font-bold">
-        Top 5 Active Campaigns by Budget
+        Top 5 Campaigns by Budget
       </h2>
 
       <div className="chart-canvas h-72 min-w-0 flex-1 sm:h-72 lg:h-auto">

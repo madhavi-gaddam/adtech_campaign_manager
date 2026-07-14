@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import App from "./App";
 import { CampaignProvider } from "./context/CampaignContext";
+import { AuthProvider } from "./context/AuthContext";
 import "./index.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -11,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
+    <AuthProvider>
     <CampaignProvider>
        <App />
        <ToastContainer
@@ -22,6 +24,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         theme="colored"
       />
     </CampaignProvider>
+    </AuthProvider>
      
     </BrowserRouter>
   </React.StrictMode>

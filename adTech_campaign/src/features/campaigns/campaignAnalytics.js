@@ -7,6 +7,10 @@ export function getCampaignSummary(campaigns) {
     (campaign) => campaign.status === 'Active',
   ).length
 
+  const pausedCampaigns = campaigns.filter(
+    (campaign) => campaign.status === 'Paused',
+  ).length
+
   const totalBudget = campaigns.reduce((total, campaign) => {
     return total + Number(campaign.budget || 0)
   }, 0)
@@ -14,6 +18,7 @@ export function getCampaignSummary(campaigns) {
   return {
     totalCampaigns,
     activeCampaigns,
+    pausedCampaigns,
     totalBudget,
   }
 }
