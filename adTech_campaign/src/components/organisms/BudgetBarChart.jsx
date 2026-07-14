@@ -11,6 +11,16 @@ import {
 
 import { formatCurrency } from "../../domain/campaign";
 
+const MAX_LABEL_LENGTH = 14;
+
+function shortenCampaignName(name) {
+  const normalizedName = String(name).trim();
+
+  return normalizedName.length > MAX_LABEL_LENGTH
+    ? `${normalizedName.slice(0, MAX_LABEL_LENGTH - 1)}…`
+    : normalizedName;
+}
+
 function CampaignBudgetTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
 
@@ -28,12 +38,17 @@ export function BudgetBarChart({ campaigns }) {
     .filter((campaign) => campaign.status === "Active")
     .sort((a, b) => Number(b.budget || 0) - Number(a.budget || 0))
     .slice(0, 5)
-    .map((campaign) => ({
-      ...campaign,
-      campaignName:
-        campaign.campaignName || campaign.name || "Untitled Campaign",
-      budget: Number(campaign.budget || 0),
-    }));
+    .map((campaign) => {
+      const campaignName =
+        campaign.campaignName || campaign.name || "Untitled Campaign";
+
+      return {
+        ...campaign,
+        campaignName,
+        campaignLabel: shortenCampaignName(campaignName),
+        budget: Number(campaign.budget || 0),
+      };
+    });
 
   if (topCampaigns.length === 0) {
     return (
@@ -57,7 +72,12 @@ export function BudgetBarChart({ campaigns }) {
         >
           <CartesianGrid strokeDasharray="3 3" />
 
-          <XAxis dataKey="campaignName" interval={0} tick={{ fontSize: 11 }} tickLine={false} />
+          <XAxis
+            dataKey="campaignLabel"
+            interval={0}
+            tick={{ fontSize: 11 }}
+            tickLine={false}
+          />
           <YAxis
             tickFormatter={(value) => new Intl.NumberFormat("en-IN", { notation: "compact", maximumFractionDigits: 1 }).format(value)}
             tick={{ fontSize: 11 }}
