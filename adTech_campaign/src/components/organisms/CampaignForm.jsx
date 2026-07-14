@@ -27,8 +27,14 @@ export function CampaignForm() {
     platform: editCampaign?.platform || "",
     ageGroup: editCampaign?.ageGroup || "",
     budget: editCampaign?.budget || "",
+    status: editCampaign?.status || "Active",
   });
   const [errors, setErrors] = useState({});
+  const statusClass = values.status === "Active"
+    ? "border-green-300 bg-green-100 text-green-800"
+    : values.status === "Paused"
+      ? "border-amber-300 bg-amber-100 text-amber-800"
+      : "border-blue-300 bg-blue-100 text-blue-800";
 
   function validate() {
     const nextErrors = {};
@@ -124,6 +130,16 @@ export function CampaignForm() {
         </SelectField>
         <FieldError error={errors.ageGroup} />
       </FormField>
+
+      {isEditMode && (
+        <FormField label="Status" htmlFor="status">
+          <SelectField id="status" name="status" value={values.status} onChange={handleChange} className={statusClass}>
+            <option value="Active">Active</option>
+            <option value="Paused">Paused</option>
+            <option value="Completed">Completed</option>
+          </SelectField>
+        </FormField>
+      )}
 
       <FormField label="Budget" htmlFor="budget">
         <Input

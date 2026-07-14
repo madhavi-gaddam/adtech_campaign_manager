@@ -14,7 +14,7 @@ export function CampaignDetailsCard({ campaign, onDelete }) {
     : "Not updated yet";
 
   return (
-    <div className="w-full max-w-3xl rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+    <div className="w-full min-w-0 max-w-3xl overflow-hidden rounded-lg border-2 border-slate-300 bg-white p-4 shadow-md dark:border-slate-600 sm:p-6">
 
       <h2 className="mb-6 text-2xl font-bold">
         Campaign Details

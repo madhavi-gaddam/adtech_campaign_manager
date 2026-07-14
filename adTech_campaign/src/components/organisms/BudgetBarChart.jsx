@@ -11,7 +11,7 @@ import {
 
 import { formatCurrency } from "../../utils/formatCurrency";
 
-const MAX_LABEL_LENGTH = 14;
+const MAX_LABEL_LENGTH = 9;
 
 function shortenCampaignName(name) {
   const normalizedName = String(name).trim();
@@ -68,14 +68,18 @@ export function BudgetBarChart({ campaigns }) {
         <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={topCampaigns}
-          margin={{ top: 8, right: 12, bottom: 30, left: 0 }}
+          margin={{ top: 8, right: 12, bottom: 54, left: 0 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
 
           <XAxis
             dataKey="campaignLabel"
             interval={0}
-            tick={{ fontSize: 11 }}
+            tick={{ fontSize: 10 }}
+            tickMargin={10}
+            angle={-35}
+            textAnchor="end"
+            height={54}
             tickLine={false}
           />
           <YAxis

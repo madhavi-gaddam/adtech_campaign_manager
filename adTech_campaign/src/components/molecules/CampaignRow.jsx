@@ -9,6 +9,11 @@ export function CampaignRow({
   onEdit,
 }) {
   const campaignName = campaign.campaignName || campaign.name || "Untitled Campaign";
+  const statusClass = campaign.status === "Active"
+    ? "border-green-300 bg-green-100 text-green-800"
+    : campaign.status === "Paused"
+      ? "border-amber-300 bg-amber-100 text-amber-800"
+      : "border-blue-300 bg-blue-100 text-blue-800";
   return (
     <tr className="border-b border-gray-200 bg-gray-50 last:border-b-0 hover:bg-white">
       <td className="px-3 py-5 text-sm font-bold text-blue-900 xl:px-4">
@@ -31,7 +36,7 @@ export function CampaignRow({
           value={campaign.status}
           aria-label={`Change status for ${campaignName}`}
           onChange={(event) => onStatusChange(campaign.id, event.target.value)}
-          className="w-full rounded-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-800 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+          className={`w-full rounded-md border px-2 py-2 text-sm font-medium outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 ${statusClass}`}
         >
           <option value="Active">Active</option>
           <option value="Paused">Paused</option>
