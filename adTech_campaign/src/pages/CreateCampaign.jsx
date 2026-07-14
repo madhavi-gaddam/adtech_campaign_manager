@@ -10,13 +10,7 @@ export function CreateCampaign() {
   return (
     <PageShell>
       <PageHeader
-        eyebrow="Campaigns"
         title={isEditMode ? "Edit Campaign" : "Create Campaign"}
-        description={
-          isEditMode
-            ? "Update the selected advertising campaign."
-            : "Create a new advertising campaign."
-        }
       />
 
       <CampaignForm />
