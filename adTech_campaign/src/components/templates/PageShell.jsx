@@ -24,7 +24,7 @@ export function PageShell({ children, rows }) {
             type="button"
             onClick={() => setTheme(isDark ? 'light' : 'dark')}
             aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-gray-300 text-gray-700 transition hover:bg-gray-100 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+            className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-600 ${isDark ? 'text-amber-500 dark:text-amber-400' : 'text-blue-600'}`}
           >
             {isDark ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
           </button>
@@ -61,14 +61,14 @@ export function PageShell({ children, rows }) {
             type="button"
             onClick={() => setTheme(isDark ? 'light' : 'dark')}
             aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
-            className="absolute bottom-5 left-4 right-4 flex items-center justify-center px-3 py-2 text-gray-700 transition hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="absolute bottom-5 left-4 right-4 flex items-center justify-center px-3 py-2 text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           >
-            <span className="flex rounded-md bg-gray-100 p-0.5" aria-hidden="true">
-              <span className={`flex h-9 w-9 items-center justify-center rounded ${!isDark ? 'bg-white text-amber-500 shadow-sm' : 'text-gray-500'}`}>
-                <Sun size={20} />
+            <span className="flex rounded-md border border-slate-300 dark:border-slate-600" aria-hidden="true">
+              <span className={`flex h-10 w-10 items-center justify-center ${!isDark ? 'text-amber-500' : 'text-slate-500 dark:text-slate-400'}`}>
+                <Sun size={22} />
               </span>
-              <span className={`flex h-9 w-9 items-center justify-center rounded ${isDark ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500'}`}>
-                <Moon size={19} />
+              <span className={`flex h-10 w-10 items-center justify-center ${isDark ? 'text-blue-600 dark:text-sky-400' : 'text-slate-500'}`}>
+                <Moon size={21} />
               </span>
             </span>
           </button>

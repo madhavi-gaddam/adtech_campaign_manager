@@ -3,7 +3,7 @@ import { InfoItem } from "../molecules/InfoItem";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { useNavigate } from "react-router-dom";
 
-export function CampaignDetailsCard({ campaign }) {
+export function CampaignDetailsCard({ campaign, onDelete }) {
   const navigate = useNavigate();
   const campaignName = campaign.campaignName || campaign.name || "Untitled Campaign";
   const createdDate = campaign.createdAt
@@ -77,6 +77,14 @@ export function CampaignDetailsCard({ campaign }) {
           }
         >
           Edit
+        </Button>
+
+        <Button
+          variant="danger"
+          className="w-full sm:w-auto"
+          onClick={onDelete}
+        >
+          Delete
         </Button>
 
       </div>

@@ -12,7 +12,7 @@ import { PageHeader } from "../components/molecules/PageHeader";
 import { PageShell } from "../components/templates/PageShell";
 
 export default function Campaigns() {
-  const { campaigns, deleteCampaign, toggleCampaignStatus } =
+  const { campaigns, deleteCampaign, setCampaignStatus } =
     useContext(CampaignContext);
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
@@ -125,7 +125,6 @@ export default function Campaigns() {
       <PageHeader
         eyebrow="Campaigns"
         title="Campaign List"
-        description="View all created campaigns."
         actions={
           <Button as={Link} to="/campaigns/create">
             <Plus size={18} aria-hidden="true" />
@@ -134,8 +133,9 @@ export default function Campaigns() {
         }
       />
 
-      <div className="grid gap-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm sm:grid-cols-2 sm:p-4 xl:grid-cols-[minmax(220px,1fr)_150px_150px_170px_180px_auto]">
+      <div className="grid grid-cols-2 gap-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm sm:p-4 md:grid-cols-3 xl:grid-cols-[minmax(220px,1fr)_150px_150px_170px_180px_auto]">
         <Input
+          className="col-span-2 w-full md:col-span-1"
           value={searchText}
           placeholder="Search by campaign ID or name"
           aria-label="Search campaigns by ID or name"
@@ -149,6 +149,7 @@ export default function Campaigns() {
           <option value="All">All Status</option>
           <option value="Active">Active</option>
           <option value="Paused">Paused</option>
+          <option value="Completed">Completed</option>
         </SelectField>
 
         <SelectField
@@ -176,14 +177,14 @@ export default function Campaigns() {
           <option value="budgetHigh">Budget: High to Low</option>
         </SelectField>
 
-        <Button type="button" variant="secondary" onClick={resetFilters}>Reset Filters</Button>
+        <Button type="button" variant="secondary" className="col-span-2 md:col-span-1" onClick={resetFilters}>Reset Filters</Button>
       </div>
 
       <CampaignTable
         campaigns={filteredCampaigns}
         onDelete={handleDelete}
         onEdit={(id) => navigate(`/campaigns/edit/${id}`)}
-        onToggleStatus={toggleCampaignStatus}
+        onStatusChange={setCampaignStatus}
         emptyMessage={campaigns.length ? "No campaigns match the selected filters. Try clearing or changing your filters." : "No campaigns have been created yet."}
       />
       {campaignToDelete && (

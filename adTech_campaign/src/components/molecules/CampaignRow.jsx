@@ -1,26 +1,23 @@
 import { Link } from "react-router-dom";
-import { Pause, Pencil, Play, Trash2 } from "lucide-react";
-import { StatusBadge } from "../atoms/StatusBadge";
+import { Pencil, Trash2 } from "lucide-react";
 import { formatCurrency } from "../../utils/formatCurrency";
 
 export function CampaignRow({
   campaign,
   onDelete,
-  onToggleStatus,
+  onStatusChange,
   onEdit,
 }) {
   const campaignName = campaign.campaignName || campaign.name || "Untitled Campaign";
-  const isActive = campaign.status === "Active";
-
   return (
     <tr className="border-b border-gray-200 bg-gray-50 last:border-b-0 hover:bg-white">
-      <td className="px-4 py-5 text-sm font-bold text-blue-900">
+      <td className="px-3 py-5 text-sm font-bold text-blue-900 xl:px-4">
         <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-md border border-gray-300 bg-blue-50 px-2">
           {campaign.id}
         </span>
       </td>
 
-      <td className="px-4 py-4 text-sm font-extrabold text-gray-950 sm:text-base">
+      <td className="px-3 py-4 text-sm font-extrabold text-gray-950 sm:text-base xl:px-4">
         <Link
           to={`/campaigns/${campaign.id}`}
           className="block max-w-64 whitespace-normal break-words leading-snug hover:text-blue-700 hover:underline"
@@ -29,38 +26,33 @@ export function CampaignRow({
         </Link>
       </td>
 
-      <td className="px-4 py-5">
-        <StatusBadge status={campaign.status} />
+      <td className="hidden px-3 py-5 md:table-cell xl:px-4">
+        <select
+          value={campaign.status}
+          aria-label={`Change status for ${campaignName}`}
+          onChange={(event) => onStatusChange(campaign.id, event.target.value)}
+          className="w-full rounded-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-800 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+        >
+          <option value="Active">Active</option>
+          <option value="Paused">Paused</option>
+          <option value="Completed">Completed</option>
+        </select>
       </td>
 
-      <td className="px-4 py-4 text-sm font-extrabold text-gray-950 sm:text-base">
+      <td className="hidden px-4 py-4 text-sm font-extrabold text-gray-950 sm:text-base xl:table-cell">
         {campaign.platform}
       </td>
 
-      <td className="px-4 py-4 text-sm text-gray-950 sm:text-base">
+      <td className="hidden px-4 py-4 text-sm text-gray-950 sm:text-base xl:table-cell">
         {campaign.ageGroup || "All"}
       </td>
 
-      <td className="px-4 py-4 text-sm text-gray-950 sm:text-base">
+      <td className="hidden px-4 py-4 text-sm text-gray-950 sm:text-base xl:table-cell">
         {formatCurrency(campaign.budget)}
       </td>
 
-      <td className="px-4 py-5">
+      <td className="hidden px-3 py-5 md:table-cell xl:px-4">
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            aria-label={isActive ? "Pause campaign" : "Activate campaign"}
-            title={isActive ? "Pause campaign" : "Activate campaign"}
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-900 transition hover:bg-indigo-200 dark:bg-indigo-400/20 dark:text-indigo-200 dark:hover:bg-indigo-400/30"
-            onClick={() => onToggleStatus(campaign.id)}
-          >
-            {isActive ? (
-              <Pause size={20} aria-hidden="true" />
-            ) : (
-              <Play size={20} aria-hidden="true" />
-            )}
-          </button>
-
           <button
             type="button"
             aria-label="Edit campaign"
@@ -81,6 +73,12 @@ export function CampaignRow({
             <Trash2 size={20} aria-hidden="true" />
           </button>
         </div>
+      </td>
+
+      <td className="px-3 py-5 md:px-3 xl:hidden">
+        <Link to={`/campaigns/${campaign.id}`} className="text-sm font-bold text-blue-700 hover:underline">
+          View
+        </Link>
       </td>
     </tr>
   );

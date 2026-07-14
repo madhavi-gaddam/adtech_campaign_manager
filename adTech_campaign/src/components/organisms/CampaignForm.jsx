@@ -141,9 +141,16 @@ export function CampaignForm() {
         <FieldError error={errors.budget} />
       </FormField>
 
-      <Button type="submit" className="mt-2 w-full">
-        {isEditMode ? "Update Campaign" : "Create Campaign"}
-      </Button>
+      <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+        <Button type="submit" className="w-full">
+          {isEditMode ? "Update Campaign" : "Create Campaign"}
+        </Button>
+        {isEditMode && (
+          <Button type="button" variant="secondary" className="w-full" onClick={() => navigate("/campaigns")}>
+            Cancel
+          </Button>
+        )}
+      </div>
     </form>
   );
 }

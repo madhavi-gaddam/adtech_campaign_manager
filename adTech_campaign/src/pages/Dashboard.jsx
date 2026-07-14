@@ -7,7 +7,7 @@ import { MetricCard } from '../components/atoms/MetricCard'
 import { PageHeader } from '../components/molecules/PageHeader'
 import { PageShell } from '../components/templates/PageShell'
 import { BudgetBarChart } from "../components/organisms/BudgetBarChart";
-import { formatCurrency } from '../domain/campaign'
+import { formatCurrency } from '../utils/formatCurrency'
 import { getCampaignSummary } from '../features/campaigns/campaignAnalytics'
 import { CampaignContext } from '../context/CampaignContextValue'
 import { PlatformPieChart } from "../components/organisms/PlatformPieChart";
@@ -20,7 +20,6 @@ export function DashboardPage() {
       <PageHeader
         eyebrow="Overview"
         title="Analytics Dashboard"
-        description="View your campaign count, active campaigns, and total budget."
         actions={
           <>
             <Button as={Link} to="/campaigns/create">

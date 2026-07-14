@@ -1,7 +1,7 @@
 import { useId, useState } from "react";
 import { Cell, Label, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
-import { formatCurrency } from "../../domain/campaign";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 const PLATFORM_COLORS = {
   Facebook: "#4F46E5",

@@ -28,7 +28,7 @@ function normalizeCampaigns(value) {
       id,
       campaignName: String(campaign.campaignName || campaign.name || "Untitled Campaign").trim(),
       budget: Number.isFinite(budget) && budget >= 0 ? budget : 0,
-      status: campaign.status === "Paused" ? "Paused" : "Active",
+      status: ["Active", "Paused", "Completed"].includes(campaign.status) ? campaign.status : "Active",
     };
   });
 }
@@ -74,12 +74,12 @@ export function CampaignProvider({ children }) {
     ));
   }, [campaigns, saveCampaigns]);
 
-  const toggleCampaignStatus = useCallback((id) => {
+  const setCampaignStatus = useCallback((id, status) => {
     saveCampaigns(campaigns.map((campaign) =>
       campaign.id === id
         ? {
             ...campaign,
-            status: campaign.status === "Active" ? "Paused" : "Active",
+            status: ["Active", "Paused", "Completed"].includes(status) ? status : campaign.status,
             updatedAt: new Date().toISOString(),
           }
         : campaign
@@ -94,9 +94,9 @@ export function CampaignProvider({ children }) {
     campaigns,
     addCampaign,
     updateCampaign,
-    toggleCampaignStatus,
+    setCampaignStatus,
     deleteCampaign,
-  }), [campaigns, addCampaign, updateCampaign, toggleCampaignStatus, deleteCampaign]);
+  }), [campaigns, addCampaign, updateCampaign, setCampaignStatus, deleteCampaign]);
 
   return <CampaignContext.Provider value={value}>{children}</CampaignContext.Provider>;
 }

@@ -9,7 +9,7 @@ import {
   CartesianGrid,
 } from "recharts";
 
-import { formatCurrency } from "../../domain/campaign";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 const MAX_LABEL_LENGTH = 14;
 
