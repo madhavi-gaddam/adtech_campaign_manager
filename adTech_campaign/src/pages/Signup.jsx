@@ -7,6 +7,7 @@ import { SelectField } from "../components/atoms/SelectField";
 import { BrandLockup } from "../components/molecules/BrandLockup";
 import { FormField } from "../components/molecules/FormField";
 import { AuthContext } from "../context/AuthContextValue";
+import { toast } from "react-toastify";
 
 export default function Signup() {
   const { currentUser, signup } = useContext(AuthContext);
@@ -22,6 +23,11 @@ export default function Signup() {
     try {
       const user = signup(values);
       const roleDashboard = user.role === "Super Admin" ? "/super-admin" : user.role === "Admin" ? "/admin" : "/";
+      if (user.role === "Super Admin") {
+        toast.success(`Welcome, Super Admin ${user.name}.`);
+      } else if (user.role === "Admin") {
+        toast.success(`Welcome, Admin ${user.name}.`);
+      }
       navigate(roleDashboard, { replace: true });
     } catch (signupError) {
       setError(signupError.message || "Unable to create account.");

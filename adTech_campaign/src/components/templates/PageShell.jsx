@@ -33,17 +33,24 @@ export function PageShell({ children, rows }) {
       <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 px-4 py-3 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95 lg:hidden">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
           <BrandLockup />
-          <div className="flex items-center gap-1">
-            <button type="button" onClick={signOut} className="inline-flex h-11 shrink-0 items-center justify-center rounded-md px-2 text-sm font-bold text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-slate-100">Logout</button>
-            <button
-              type="button"
-              onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
-              className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-600 ${isDark ? 'text-amber-500 dark:text-amber-400' : 'text-blue-600'}`}
-            >
-              {isDark ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
-            </button>
+          <button
+            type="button"
+            onClick={() => setTheme(isDark ? 'light' : 'dark')}
+            aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
+            className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-600 ${isDark ? 'text-amber-500 dark:text-amber-400' : 'text-blue-600'}`}
+          >
+            {isDark ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
+          </button>
+        </div>
+        <div className="mx-auto mt-3 flex max-w-7xl items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2">
+            <UserCircle2 size={28} className="shrink-0 text-blue-600" aria-hidden="true" />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-bold text-gray-900 dark:text-slate-100">{currentUser?.name}</p>
+              <p className="text-xs text-gray-500 dark:text-slate-400">{currentUser?.role}</p>
+            </div>
           </div>
+          <button type="button" onClick={signOut} className="inline-flex h-10 shrink-0 items-center justify-center rounded-md border border-slate-300 px-3 text-sm font-bold text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-600 dark:text-slate-100">Logout</button>
         </div>
         <nav className={`mx-auto mt-3 grid max-w-7xl gap-2 ${isSuperAdmin ? 'grid-cols-5' : hasAdminDashboard ? 'grid-cols-4' : 'grid-cols-3'}`} aria-label="Main navigation">
           <NavLink to="/" end aria-label="User dashboard" title="User Dashboard" className={({ isActive }) => `${linkClass({ isActive })} justify-center px-3`}><LayoutDashboard size={18} aria-hidden="true" /><span className="sr-only">User Dashboard</span></NavLink>

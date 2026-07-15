@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContextValue";
+import { toast } from "react-toastify";
 import { BrandLockup } from "../components/molecules/BrandLockup";
 import { Button } from "../components/atoms/Button";
 import { Input } from "../components/atoms/Input";
@@ -24,6 +25,11 @@ export default function Login() {
     try {
       const user = login(values);
       const roleDashboard = user.role === "Super Admin" ? "/super-admin" : user.role === "Admin" ? "/admin" : "/";
+      if (user.role === "Super Admin") {
+        toast.success(`Welcome back, Super Admin ${user.name}.`);
+      } else if (user.role === "Admin") {
+        toast.success(`Welcome back, Admin ${user.name}.`);
+      }
       navigate(location.state?.from?.pathname || roleDashboard, { replace: true });
     } catch (loginError) {
       setError(loginError.message || "Unable to log in.");

@@ -2,6 +2,7 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { AuthContext } from "../context/AuthContextValue";
 import { CampaignContext } from "../context/CampaignContextValue";
 
 import { Button } from "../components/atoms/Button";
@@ -12,9 +13,26 @@ import { PageHeader } from "../components/molecules/PageHeader";
 import { PageShell } from "../components/templates/PageShell";
 
 export default function Campaigns() {
-  const { campaigns, deleteCampaign, setCampaignStatus } =
-    useContext(CampaignContext);
+  const { currentUser, users } = useContext(AuthContext);
+  const {
+    campaigns,
+    allCampaigns,
+    deleteCampaign,
+    deleteCampaignAsAdmin,
+    setCampaignStatus,
+    setCampaignStatusAsAdmin,
+  } = useContext(CampaignContext);
   const navigate = useNavigate();
+  const canManageAllCampaigns = ["Admin", "Super Admin"].includes(currentUser?.role);
+  const visibleCampaigns = canManageAllCampaigns ? allCampaigns : campaigns;
+  const campaignsWithOwner = useMemo(() => visibleCampaigns.map((campaign) => {
+    const owner = users.find((user) => user.id === campaign.ownerId);
+    return {
+      ...campaign,
+      ownerName: owner?.name || campaign.ownerName || "Unknown user",
+      ownerRole: owner?.role || "Unknown role",
+    };
+  }), [users, visibleCampaigns]);
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [ageFilter, setAgeFilter] = useState("__all");
@@ -23,11 +41,11 @@ export default function Campaigns() {
   const [campaignToDelete, setCampaignToDelete] = useState(null);
   const dialogRef = useRef(null);
   const deleteTriggerRef = useRef(null);
-  const ageGroups = [...new Set(campaigns.map((campaign) => campaign.ageGroup).filter(Boolean))];
-  const platforms = [...new Set(campaigns.map((campaign) => campaign.platform).filter(Boolean))];
+  const ageGroups = [...new Set(campaignsWithOwner.map((campaign) => campaign.ageGroup).filter(Boolean))];
+  const platforms = [...new Set(campaignsWithOwner.map((campaign) => campaign.platform).filter(Boolean))];
 
   const filteredCampaigns = useMemo(() => {
-    const filtered = campaigns.filter((campaign) => {
+    const filtered = campaignsWithOwner.filter((campaign) => {
       const campaignName = campaign.campaignName || campaign.name || "";
       const nameMatch = campaignName
         .toLowerCase()
@@ -56,7 +74,7 @@ export default function Campaigns() {
 
       return Number(firstCampaign.id) - Number(secondCampaign.id);
     });
-  }, [ageFilter, budgetSort, campaigns, platformFilter, searchText, statusFilter]);
+  }, [ageFilter, budgetSort, campaignsWithOwner, platformFilter, searchText, statusFilter]);
 
   function closeDeleteDialog() {
     setCampaignToDelete(null);
@@ -94,7 +112,7 @@ export default function Campaigns() {
 
   function handleDelete(id, trigger) {
     deleteTriggerRef.current = trigger;
-    const selectedCampaign = campaigns.find((campaign) => campaign.id === id);
+    const selectedCampaign = visibleCampaigns.find((campaign) => campaign.id === id);
     setCampaignToDelete(selectedCampaign);
   }
 
@@ -112,7 +130,10 @@ export default function Campaigns() {
     }
 
     try {
-      deleteCampaign(campaignToDelete.id);
+      const deleted = canManageAllCampaigns
+        ? deleteCampaignAsAdmin(campaignToDelete.id)
+        : (deleteCampaign(campaignToDelete.id), true);
+      if (!deleted) throw new Error("Unable to delete campaign.");
       toast.success("Campaign deleted successfully.");
       closeDeleteDialog();
     } catch {
@@ -182,10 +203,18 @@ export default function Campaigns() {
 
       <CampaignTable
         campaigns={filteredCampaigns}
+        showOwner={canManageAllCampaigns}
         onDelete={handleDelete}
-        onEdit={(id) => navigate(`/campaigns/edit/${id}`)}
-        onStatusChange={setCampaignStatus}
-        emptyMessage={campaigns.length ? "No campaigns match the selected filters. Try clearing or changing your filters." : "No campaigns have been created yet."}
+        onEdit={(id) => {
+          const campaign = visibleCampaigns.find((item) => item.id === id);
+          navigate(canManageAllCampaigns && campaign
+            ? `/admin/users/${campaign.ownerId}/campaigns/edit/${id}`
+            : `/campaigns/edit/${id}`);
+        }}
+        onStatusChange={(id, status) => canManageAllCampaigns
+          ? setCampaignStatusAsAdmin(id, status)
+          : setCampaignStatus(id, status)}
+        emptyMessage={visibleCampaigns.length ? "No campaigns match the selected filters. Try clearing or changing your filters." : "No campaigns have been created yet."}
       />
       {campaignToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">

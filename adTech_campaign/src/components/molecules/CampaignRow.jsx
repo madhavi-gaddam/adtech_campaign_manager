@@ -7,6 +7,7 @@ export function CampaignRow({
   onDelete,
   onStatusChange,
   onEdit,
+  showOwner,
 }) {
   const campaignName = campaign.campaignName || campaign.name || "Untitled Campaign";
   const statusClass = campaign.status === "Active"
@@ -29,6 +30,12 @@ export function CampaignRow({
         >
           {campaignName}
         </Link>
+        {showOwner && (
+          <div className="mt-1 xl:hidden">
+            <p className="text-xs font-semibold text-gray-700">{campaign.ownerName}</p>
+            <p className="text-xs font-medium text-gray-500">{campaign.ownerRole}</p>
+          </div>
+        )}
       </td>
 
       <td className="hidden px-3 py-5 md:table-cell xl:px-4">
@@ -55,6 +62,13 @@ export function CampaignRow({
       <td className="hidden px-4 py-4 text-sm text-gray-950 sm:text-base xl:table-cell">
         {formatCurrency(campaign.budget)}
       </td>
+
+      {showOwner && (
+        <td className="hidden px-4 py-4 xl:table-cell">
+          <p className="break-words text-sm font-semibold text-gray-950">{campaign.ownerName}</p>
+          <p className="mt-1 text-xs font-medium text-gray-500">{campaign.ownerRole}</p>
+        </td>
+      )}
 
       <td className="hidden px-3 py-5 md:table-cell xl:px-4">
         <div className="flex items-center gap-2">

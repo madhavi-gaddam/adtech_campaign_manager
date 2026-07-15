@@ -13,6 +13,7 @@ export function UserControl() {
   const { users, updateUserRole, deleteUser } = useContext(AuthContext);
   const { deleteCampaignsByOwner } = useContext(CampaignContext);
   const [search, setSearch] = useState("");
+  const [userToDelete, setUserToDelete] = useState(null);
 
   const visibleUsers = useMemo(() => users.filter((user) => {
     if (user.role === "Super Admin") return false;
@@ -29,14 +30,17 @@ export function UserControl() {
     toast.error("Super Admin details cannot be changed.");
   }
 
-  function removeManagedUser(user) {
-    if (!window.confirm(`Delete ${user.name}? Their campaigns will also be removed.`)) return;
+  function removeManagedUser() {
+    if (!userToDelete) return;
+    const user = userToDelete;
     if (deleteUser(user.id)) {
       deleteCampaignsByOwner(user.id);
       toast.success(`${user.name} was deleted.`);
+      setUserToDelete(null);
       return;
     }
     toast.error("You cannot delete yourself or a Super Admin account.");
+    setUserToDelete(null);
   }
 
   return (
@@ -72,7 +76,7 @@ export function UserControl() {
                 ) : (
                   <Button type="button" variant="secondary" className="min-h-9 px-3 py-1.5" onClick={() => changeManagedRole(user, "User")}>Demote</Button>
                 )}
-                <button type="button" aria-label={`Delete ${user.name}`} title="Delete account" onClick={() => removeManagedUser(user)} className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-rose-600 text-white transition hover:bg-rose-700">
+                <button type="button" aria-label={`Delete ${user.name}`} title="Delete account" onClick={() => setUserToDelete(user)} className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-rose-600 text-white transition hover:bg-rose-700">
                   <Trash2 size={16} aria-hidden="true" />
                 </button>
               </div>
@@ -108,7 +112,7 @@ export function UserControl() {
                       ) : (
                         <Button type="button" variant="secondary" className="min-h-9 px-3 py-1.5" onClick={() => changeManagedRole(user, "User")}>Demote</Button>
                       )}
-                      <button type="button" aria-label={`Delete ${user.name}`} title="Delete account" onClick={() => removeManagedUser(user)} className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-rose-600 text-white transition hover:bg-rose-700">
+                      <button type="button" aria-label={`Delete ${user.name}`} title="Delete account" onClick={() => setUserToDelete(user)} className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-rose-600 text-white transition hover:bg-rose-700">
                         <Trash2 size={16} aria-hidden="true" />
                       </button>
                     </div>
@@ -122,6 +126,21 @@ export function UserControl() {
           </table>
         </div>
       </section>
+
+      {userToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div role="dialog" aria-modal="true" aria-labelledby="delete-user-dialog-title" aria-describedby="delete-user-dialog-description" className="w-full max-w-md rounded-lg bg-white p-4 shadow-xl sm:p-6">
+            <h2 id="delete-user-dialog-title" className="text-lg font-bold text-gray-900">Delete user?</h2>
+            <p id="delete-user-dialog-description" className="mt-2 text-sm text-gray-600">
+              Delete <span className="font-bold">{userToDelete.name}</span>? Their campaigns will also be permanently removed.
+            </p>
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <Button variant="secondary" className="w-full sm:w-auto" onClick={() => setUserToDelete(null)}>Cancel</Button>
+              <Button variant="danger" className="w-full sm:w-auto" onClick={removeManagedUser}>Delete User</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageShell>
   );
 }

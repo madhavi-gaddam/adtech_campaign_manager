@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useState } from "react";
 import { CampaignContext } from "./CampaignContextValue";
 import { AuthContext } from "./AuthContextValue";
 
@@ -51,35 +51,24 @@ export function CampaignProvider({ children }) {
   const [allCampaigns, setAllCampaigns] = useState(loadStoredCampaigns);
   const { currentUser } = useContext(AuthContext);
 
-  const saveCampaigns = useCallback((nextCampaigns) => {
+  function saveCampaigns(nextCampaigns) {
     try {
       localStorage.setItem(storageKey, JSON.stringify(nextCampaigns));
       setAllCampaigns(nextCampaigns);
     } catch {
       throw new Error("Campaigns could not be saved. Browser storage may be unavailable or full.");
     }
-  }, []);
+  }
 
-  // Preserve campaigns created before authentication was introduced by assigning
-  // them to the first account that signs in after the upgrade.
-  useEffect(() => {
-    if (!currentUser || !allCampaigns.some((campaign) => !campaign.ownerId)) return;
-    saveCampaigns(allCampaigns.map((campaign) => campaign.ownerId ? campaign : {
-      ...campaign,
-      ownerId: currentUser.id,
-      ownerName: currentUser.name,
-    }));
-  }, [allCampaigns, currentUser, saveCampaigns]);
-
-  const addCampaign = useCallback((campaign) => {
+  function addCampaign(campaign) {
     const now = new Date().toISOString();
     saveCampaigns([
       ...allCampaigns,
       { ...campaign, id: createCampaignId(new Set(allCampaigns.map((item) => item.id))), ownerId: currentUser?.id, ownerName: currentUser?.name, status: "Active", createdAt: now, updatedAt: now },
     ]);
-  }, [allCampaigns, currentUser?.id, currentUser?.name, saveCampaigns]);
+  }
 
-  const addCampaignAsAdmin = useCallback((owner, campaign) => {
+  function addCampaignAsAdmin(owner, campaign) {
     if (!["Admin", "Super Admin"].includes(currentUser?.role) || !owner?.id) return false;
 
     const now = new Date().toISOString();
@@ -96,17 +85,17 @@ export function CampaignProvider({ children }) {
       },
     ]);
     return true;
-  }, [allCampaigns, currentUser?.role, saveCampaigns]);
+  }
 
-  const updateCampaign = useCallback((id, updatedCampaign) => {
+  function updateCampaign(id, updatedCampaign) {
     saveCampaigns(allCampaigns.map((campaign) =>
       campaign.id === id && campaign.ownerId === currentUser?.id
         ? { ...campaign, ...updatedCampaign, updatedAt: new Date().toISOString() }
         : campaign
     ));
-  }, [allCampaigns, currentUser?.id, saveCampaigns]);
+  }
 
-  const setCampaignStatus = useCallback((id, status) => {
+  function setCampaignStatus(id, status) {
     saveCampaigns(allCampaigns.map((campaign) =>
       campaign.id === id && campaign.ownerId === currentUser?.id
         ? {
@@ -116,9 +105,9 @@ export function CampaignProvider({ children }) {
           }
         : campaign
     ));
-  }, [allCampaigns, currentUser?.id, saveCampaigns]);
+  }
 
-  const updateCampaignAsAdmin = useCallback((id, updatedCampaign) => {
+  function updateCampaignAsAdmin(id, updatedCampaign) {
     if (!["Admin", "Super Admin"].includes(currentUser?.role)) return false;
     saveCampaigns(allCampaigns.map((campaign) =>
       campaign.id === id
@@ -126,9 +115,9 @@ export function CampaignProvider({ children }) {
         : campaign
     ));
     return true;
-  }, [allCampaigns, currentUser?.role, saveCampaigns]);
+  }
 
-  const setCampaignStatusAsAdmin = useCallback((id, status) => {
+  function setCampaignStatusAsAdmin(id, status) {
     if (!["Admin", "Super Admin"].includes(currentUser?.role)) return false;
     saveCampaigns(allCampaigns.map((campaign) =>
       campaign.id === id
@@ -140,29 +129,28 @@ export function CampaignProvider({ children }) {
         : campaign
     ));
     return true;
-  }, [allCampaigns, currentUser?.role, saveCampaigns]);
+  }
 
-  const deleteCampaign = useCallback((id) => {
+  function deleteCampaign(id) {
     saveCampaigns(allCampaigns.filter((campaign) => !(campaign.id === id && campaign.ownerId === currentUser?.id)));
-  }, [allCampaigns, currentUser?.id, saveCampaigns]);
+  }
 
-  const deleteCampaignAsAdmin = useCallback((id) => {
+  function deleteCampaignAsAdmin(id) {
     if (!["Admin", "Super Admin"].includes(currentUser?.role)) return false;
     saveCampaigns(allCampaigns.filter((campaign) => campaign.id !== id));
     return true;
-  }, [allCampaigns, currentUser?.role, saveCampaigns]);
+  }
 
-  const deleteCampaignsByOwner = useCallback((ownerId) => {
+  function deleteCampaignsByOwner(ownerId) {
     if (currentUser?.role !== "Super Admin") return;
     saveCampaigns(allCampaigns.filter((campaign) => campaign.ownerId !== ownerId));
-  }, [allCampaigns, currentUser?.role, saveCampaigns]);
+  }
 
-  const campaigns = useMemo(() => {
-    if (!currentUser) return [];
-    return allCampaigns.filter((campaign) => campaign.ownerId === currentUser.id);
-  }, [allCampaigns, currentUser]);
+  const campaigns = currentUser
+    ? allCampaigns.filter((campaign) => campaign.ownerId === currentUser.id)
+    : [];
 
-  const value = useMemo(() => ({
+  const value = {
     campaigns,
     allCampaigns,
     addCampaign,
@@ -174,7 +162,7 @@ export function CampaignProvider({ children }) {
     deleteCampaign,
     deleteCampaignAsAdmin,
     deleteCampaignsByOwner,
-  }), [campaigns, allCampaigns, addCampaign, addCampaignAsAdmin, updateCampaign, setCampaignStatus, updateCampaignAsAdmin, setCampaignStatusAsAdmin, deleteCampaign, deleteCampaignAsAdmin, deleteCampaignsByOwner]);
+  };
 
   return <CampaignContext.Provider value={value}>{children}</CampaignContext.Provider>;
 }
