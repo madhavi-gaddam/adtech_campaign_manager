@@ -13,14 +13,18 @@ import { PageHeader } from "../components/molecules/PageHeader";
 import { PageShell } from "../components/templates/PageShell";
 
 export default function Campaigns() {
-  const { users } = useContext(AuthContext);
+  const { users, currentUser } = useContext(AuthContext);
   const {
     campaigns,
+    allCampaigns,
     deleteCampaign,
+    deleteCampaignAsAdmin,
     setCampaignStatus,
+    setCampaignStatusAsAdmin,
   } = useContext(CampaignContext);
   const navigate = useNavigate();
-  const visibleCampaigns = campaigns;
+  const isSuperAdmin = currentUser?.role === "Super Admin";
+  const visibleCampaigns = isSuperAdmin ? allCampaigns : campaigns;
   const campaignsWithOwner = visibleCampaigns.map((campaign) => {
     const owner = users.find((user) => user.id === campaign.ownerId);
     return {
@@ -124,7 +128,11 @@ export default function Campaigns() {
     }
 
     try {
-      deleteCampaign(campaignToDelete.id);
+      if (isSuperAdmin) {
+        deleteCampaignAsAdmin(campaignToDelete.id);
+      } else {
+        deleteCampaign(campaignToDelete.id);
+      }
       toast.success("Campaign deleted successfully.");
       closeDeleteDialog();
     } catch {
@@ -194,15 +202,21 @@ export default function Campaigns() {
 
       <CampaignTable
         campaigns={filteredCampaigns}
-        showOwner={false}
+        showOwner={isSuperAdmin}
         canManageCampaign={() => true}
         onDelete={handleDelete}
         onEdit={(id) => {
           const campaign = visibleCampaigns.find((item) => item.id === id);
-          if (campaign) navigate(`/campaigns/edit/${id}`);
+          if (campaign) {
+            navigate(isSuperAdmin ? `/admin/users/${campaign.ownerId}/campaigns/edit/${id}` : `/campaigns/edit/${id}`);
+          }
         }}
         onStatusChange={(id, status) => {
-          setCampaignStatus(id, status);
+          if (isSuperAdmin) {
+            setCampaignStatusAsAdmin(id, status);
+          } else {
+            setCampaignStatus(id, status);
+          }
         }}
         emptyMessage={visibleCampaigns.length ? "No campaigns match the selected filters. Try clearing or changing your filters." : "No campaigns have been created yet."}
       />

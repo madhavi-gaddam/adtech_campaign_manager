@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { CampaignContext } from "../context/CampaignContextValue";
+import { AuthContext } from "../context/AuthContextValue";
 
 import { PageShell } from "../components/templates/PageShell";
 import { PageHeader } from "../components/molecules/PageHeader";
@@ -13,9 +14,11 @@ export default function CampaignDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { campaigns, deleteCampaign } = useContext(CampaignContext);
+  const { currentUser } = useContext(AuthContext);
+  const { campaigns, allCampaigns, deleteCampaign, deleteCampaignAsAdmin } = useContext(CampaignContext);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const visibleCampaigns = campaigns;
+  const isSuperAdmin = currentUser?.role === "Super Admin";
+  const visibleCampaigns = isSuperAdmin ? allCampaigns : campaigns;
 
   const campaign = visibleCampaigns.find(
     (campaign) => campaign.id === id
@@ -45,7 +48,7 @@ export default function CampaignDetails() {
         campaign={campaign}
         onDelete={() => setIsDeleteDialogOpen(true)}
         canManage={true}
-        editPath={`/campaigns/edit/${campaign.id}`}
+        editPath={isSuperAdmin ? `/admin/users/${campaign.ownerId}/campaigns/edit/${campaign.id}` : `/campaigns/edit/${campaign.id}`}
       />
 
       {isDeleteDialogOpen && (
@@ -63,7 +66,11 @@ export default function CampaignDetails() {
                 variant="danger"
                 className="w-full sm:w-auto"
                 onClick={() => {
-                  deleteCampaign(campaign.id);
+                  if (isSuperAdmin) {
+                    deleteCampaignAsAdmin(campaign.id);
+                  } else {
+                    deleteCampaign(campaign.id);
+                  }
                   toast.success("Campaign deleted successfully.");
                   navigate("/campaigns");
                 }}
