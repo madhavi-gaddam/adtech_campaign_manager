@@ -78,7 +78,12 @@ export function CampaignForm() {
   function handleChange(event) {
     const { name, value } = event.target;
     setValues((currentValues) => ({ ...currentValues, [name]: value }));
-    setErrors((currentErrors) => ({ ...currentErrors, [name]: undefined }));
+    setErrors((currentErrors) => ({
+      ...currentErrors,
+      [name]: name === "budget" && Number(value) > MAX_BUDGET
+        ? `Budget cannot exceed ₹${MAX_BUDGET.toLocaleString("en-IN")}.`
+        : undefined,
+    }));
   }
 
   function onSubmit(event) {

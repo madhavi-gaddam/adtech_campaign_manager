@@ -3,7 +3,7 @@ import { InfoItem } from "../molecules/InfoItem";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { useNavigate } from "react-router-dom";
 
-export function CampaignDetailsCard({ campaign, onDelete, editPath }) {
+export function CampaignDetailsCard({ campaign, onDelete, editPath, canManage = true }) {
   const navigate = useNavigate();
   const campaignName = campaign.campaignName || campaign.name || "Untitled Campaign";
   const createdDate = campaign.createdAt
@@ -70,22 +70,22 @@ export function CampaignDetailsCard({ campaign, onDelete, editPath }) {
           Back
         </Button>
 
-        <Button
+        {canManage && <Button
           className="w-full sm:w-auto"
           onClick={() =>
             navigate(editPath || `/campaigns/edit/${campaign.id}`)
           }
         >
           Edit
-        </Button>
+        </Button>}
 
-        <Button
+        {canManage && <Button
           variant="danger"
           className="w-full sm:w-auto"
           onClick={onDelete}
         >
           Delete
-        </Button>
+        </Button>}
 
       </div>
 

@@ -6,7 +6,7 @@ export function ProtectedRoute({ roles }) {
   const { currentUser } = useContext(AuthContext);
   const location = useLocation();
 
-  if (!currentUser) return <Navigate to="/signup" replace state={{ from: location }} />;
+  if (!currentUser) return <Navigate to="/login" replace state={{ from: location }} />;
   if (roles && !roles.includes(currentUser.role)) return <Navigate to="/" replace />;
   return <Outlet />;
 }

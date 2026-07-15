@@ -1,5 +1,5 @@
 import { Activity, Banknote, Megaphone, Plus, Users } from "lucide-react";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { Button } from "../components/atoms/Button";
@@ -19,17 +19,17 @@ export function AdminDashboard() {
   const [search, setSearch] = useState("");
   const summary = getCampaignSummary(allCampaigns);
 
-  const campaignsByOwner = useMemo(() => allCampaigns.reduce((result, campaign) => {
+  const campaignsByOwner = allCampaigns.reduce((result, campaign) => {
     result[campaign.ownerId] ??= [];
     result[campaign.ownerId].push(campaign);
     return result;
-  }, {}), [allCampaigns]);
+  }, {});
 
-  const visibleUsers = useMemo(() => users.filter((user) => {
+  const visibleUsers = users.filter((user) => {
     const query = search.trim().toLowerCase();
     if (!query) return true;
     return `${user.name} ${user.email} ${user.role}`.toLowerCase().includes(query);
-  }), [search, users]);
+  });
 
   function openUserDetails(userId) {
     navigate(`/admin/users/${userId}`);

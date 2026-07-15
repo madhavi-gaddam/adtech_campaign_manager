@@ -20,12 +20,17 @@ const statusClasses = {
 export function UserDetails() {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const { users } = useContext(AuthContext);
+  const { users, currentUser } = useContext(AuthContext);
   const { allCampaigns, setCampaignStatusAsAdmin, deleteCampaignAsAdmin } = useContext(CampaignContext);
   const [campaignToDelete, setCampaignToDelete] = useState(null);
 
   const user = users.find((item) => item.id === userId);
   const userCampaigns = allCampaigns.filter((campaign) => campaign.ownerId === userId);
+  const backPath = currentUser?.role === "Super Admin" ? "/super-admin" : "/admin";
+
+  function canManageCampaign(campaign) {
+    return currentUser?.role === "Super Admin" || campaign.createdById === currentUser?.id;
+  }
 
   function changeStatus(campaignId, status) {
     if (setCampaignStatusAsAdmin(campaignId, status)) {
@@ -55,7 +60,7 @@ export function UserDetails() {
           eyebrow="Admin Workspace"
           title="User Not Found"
           description="The selected user could not be found in the current account list."
-          actions={<Button as={Link} to="/admin" variant="secondary">Back to Admin</Button>}
+          actions={<Button as={Link} to={backPath} variant="secondary">Back</Button>}
         />
       </PageShell>
     );
@@ -71,7 +76,7 @@ export function UserDetails() {
               <Plus size={18} aria-hidden="true" />
               Create Campaign
             </Button>
-            <Button as={Link} to="/admin" variant="secondary">Back to Admin</Button>
+            <Button as={Link} to={backPath} variant="secondary">Back</Button>
           </>
         }
       />
@@ -117,7 +122,8 @@ export function UserDetails() {
                       value={campaign.status}
                       aria-label={`Change status for ${campaignName}`}
                       onChange={(event) => changeStatus(campaign.id, event.target.value)}
-                      className={`mt-1 w-full rounded-md border px-2 py-2 text-sm font-medium outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 ${statusClasses[campaign.status] || statusClasses.Active}`}
+                      disabled={!canManageCampaign(campaign)}
+                      className={`mt-1 w-full rounded-md border px-2 py-2 text-sm font-medium outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:opacity-60 ${statusClasses[campaign.status] || statusClasses.Active}`}
                     >
                       <option value="Active">Active</option>
                       <option value="Paused">Paused</option>
@@ -127,7 +133,7 @@ export function UserDetails() {
                 </div>
                 <div className="mt-3 flex items-center justify-between gap-3">
                   <p className="text-xs text-gray-500">Created {formatDateTime(campaign.createdAt)}</p>
-                  <div className="flex items-center gap-2">
+                  {canManageCampaign(campaign) ? <div className="flex items-center gap-2">
                     <button
                       type="button"
                       aria-label={`Edit ${campaignName}`}
@@ -146,7 +152,7 @@ export function UserDetails() {
                     >
                       <Trash2 size={18} aria-hidden="true" />
                     </button>
-                  </div>
+                  </div> : <span className="text-xs font-semibold text-gray-500">View only</span>}
                 </div>
               </article>
             );
@@ -188,7 +194,8 @@ export function UserDetails() {
                         value={campaign.status}
                         aria-label={`Change status for ${campaignName}`}
                         onChange={(event) => changeStatus(campaign.id, event.target.value)}
-                        className={`w-full min-w-32 rounded-md border px-2 py-2 text-sm font-medium outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 ${statusClasses[campaign.status] || statusClasses.Active}`}
+                        disabled={!canManageCampaign(campaign)}
+                        className={`w-full min-w-32 rounded-md border px-2 py-2 text-sm font-medium outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:opacity-60 ${statusClasses[campaign.status] || statusClasses.Active}`}
                       >
                         <option value="Active">Active</option>
                         <option value="Paused">Paused</option>
@@ -197,7 +204,7 @@ export function UserDetails() {
                     </td>
                     <td className="px-4 py-4 text-gray-700">{formatDateTime(campaign.createdAt)}</td>
                     <td className="px-4 py-4">
-                      <div className="flex items-center gap-2">
+                      {canManageCampaign(campaign) ? <div className="flex items-center gap-2">
                         <button
                           type="button"
                           aria-label={`Edit ${campaignName}`}
@@ -216,7 +223,7 @@ export function UserDetails() {
                         >
                           <Trash2 size={18} aria-hidden="true" />
                         </button>
-                      </div>
+                      </div> : <span className="text-xs font-semibold text-gray-500">View only</span>}
                     </td>
                   </tr>
                 );

@@ -36,6 +36,8 @@ export default function CampaignDetails() {
     );
   }
 
+  const canManageCampaign = !canManageAllCampaigns || currentUser?.role === "Super Admin" || campaign.createdById === currentUser?.id;
+
   return (
     <PageShell>
 
@@ -47,6 +49,7 @@ export default function CampaignDetails() {
       <CampaignDetailsCard
         campaign={campaign}
         onDelete={() => setIsDeleteDialogOpen(true)}
+        canManage={canManageCampaign}
         editPath={canManageAllCampaigns
           ? `/admin/users/${campaign.ownerId}/campaigns/edit/${campaign.id}`
           : `/campaigns/edit/${campaign.id}`}
@@ -67,13 +70,15 @@ export default function CampaignDetails() {
                 variant="danger"
                 className="w-full sm:w-auto"
                 onClick={() => {
-                  if (canManageAllCampaigns) {
-                    deleteCampaignAsAdmin(campaign.id);
+                  const deleted = canManageAllCampaigns
+                    ? deleteCampaignAsAdmin(campaign.id)
+                    : (deleteCampaign(campaign.id), true);
+                  if (deleted) {
+                    toast.success("Campaign deleted successfully.");
+                    navigate("/campaigns");
                   } else {
-                    deleteCampaign(campaign.id);
+                    toast.error("You can delete only campaigns you created.");
                   }
-                  toast.success("Campaign deleted successfully.");
-                  navigate("/campaigns");
                 }}
               >
                 Delete

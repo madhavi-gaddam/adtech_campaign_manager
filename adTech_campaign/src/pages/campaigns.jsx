@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -25,14 +25,14 @@ export default function Campaigns() {
   const navigate = useNavigate();
   const canManageAllCampaigns = ["Admin", "Super Admin"].includes(currentUser?.role);
   const visibleCampaigns = canManageAllCampaigns ? allCampaigns : campaigns;
-  const campaignsWithOwner = useMemo(() => visibleCampaigns.map((campaign) => {
+  const campaignsWithOwner = visibleCampaigns.map((campaign) => {
     const owner = users.find((user) => user.id === campaign.ownerId);
     return {
       ...campaign,
       ownerName: owner?.name || campaign.ownerName || "Unknown user",
       ownerRole: owner?.role || "Unknown role",
     };
-  }), [users, visibleCampaigns]);
+  });
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [ageFilter, setAgeFilter] = useState("__all");
@@ -44,8 +44,7 @@ export default function Campaigns() {
   const ageGroups = [...new Set(campaignsWithOwner.map((campaign) => campaign.ageGroup).filter(Boolean))];
   const platforms = [...new Set(campaignsWithOwner.map((campaign) => campaign.platform).filter(Boolean))];
 
-  const filteredCampaigns = useMemo(() => {
-    const filtered = campaignsWithOwner.filter((campaign) => {
+  const filteredCampaigns = campaignsWithOwner.filter((campaign) => {
       const campaignName = campaign.campaignName || campaign.name || "";
       const nameMatch = campaignName
         .toLowerCase()
@@ -61,9 +60,9 @@ export default function Campaigns() {
         platformFilter === "All" || campaign.platform === platformFilter;
 
       return (nameMatch || idMatch) && statusMatch && ageMatch && platformMatch;
-    });
+  });
 
-    return [...filtered].sort((firstCampaign, secondCampaign) => {
+  filteredCampaigns.sort((firstCampaign, secondCampaign) => {
       if (budgetSort === "budgetHigh") {
         return secondCampaign.budget - firstCampaign.budget;
       }
@@ -73,8 +72,7 @@ export default function Campaigns() {
       }
 
       return Number(firstCampaign.id) - Number(secondCampaign.id);
-    });
-  }, [ageFilter, budgetSort, campaignsWithOwner, platformFilter, searchText, statusFilter]);
+  });
 
   function closeDeleteDialog() {
     setCampaignToDelete(null);
@@ -204,16 +202,24 @@ export default function Campaigns() {
       <CampaignTable
         campaigns={filteredCampaigns}
         showOwner={canManageAllCampaigns}
+        canManageCampaign={(campaign) => !canManageAllCampaigns || currentUser?.role === "Super Admin" || campaign.createdById === currentUser?.id}
         onDelete={handleDelete}
         onEdit={(id) => {
           const campaign = visibleCampaigns.find((item) => item.id === id);
+          if (currentUser?.role === "Admin" && campaign?.createdById !== currentUser.id) {
+            toast.error("You can edit only campaigns you created.");
+            return;
+          }
           navigate(canManageAllCampaigns && campaign
             ? `/admin/users/${campaign.ownerId}/campaigns/edit/${id}`
             : `/campaigns/edit/${id}`);
         }}
-        onStatusChange={(id, status) => canManageAllCampaigns
-          ? setCampaignStatusAsAdmin(id, status)
-          : setCampaignStatus(id, status)}
+        onStatusChange={(id, status) => {
+          const updated = canManageAllCampaigns
+            ? setCampaignStatusAsAdmin(id, status)
+            : (setCampaignStatus(id, status), true);
+          if (!updated) toast.error("You can change only campaigns you created.");
+        }}
         emptyMessage={visibleCampaigns.length ? "No campaigns match the selected filters. Try clearing or changing your filters." : "No campaigns have been created yet."}
       />
       {campaignToDelete && (

@@ -8,6 +8,7 @@ export function CampaignRow({
   onStatusChange,
   onEdit,
   showOwner,
+  canManage,
 }) {
   const campaignName = campaign.campaignName || campaign.name || "Untitled Campaign";
   const statusClass = campaign.status === "Active"
@@ -43,7 +44,8 @@ export function CampaignRow({
           value={campaign.status}
           aria-label={`Change status for ${campaignName}`}
           onChange={(event) => onStatusChange(campaign.id, event.target.value)}
-          className={`w-full rounded-md border px-2 py-2 text-sm font-medium outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 ${statusClass}`}
+          disabled={!canManage}
+          className={`w-full rounded-md border px-2 py-2 text-sm font-medium outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:opacity-60 ${statusClass}`}
         >
           <option value="Active">Active</option>
           <option value="Paused">Paused</option>
@@ -71,7 +73,7 @@ export function CampaignRow({
       )}
 
       <td className="hidden px-3 py-5 md:table-cell xl:px-4">
-        <div className="flex items-center gap-2">
+        {canManage ? <div className="flex items-center gap-2">
           <button
             type="button"
             aria-label="Edit campaign"
@@ -91,7 +93,7 @@ export function CampaignRow({
           >
             <Trash2 size={20} aria-hidden="true" />
           </button>
-        </div>
+        </div> : <span className="text-xs font-semibold text-gray-500">View only</span>}
       </td>
 
       <td className="px-3 py-5 md:px-3 xl:hidden">

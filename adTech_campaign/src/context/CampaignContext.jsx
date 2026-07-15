@@ -51,6 +51,11 @@ export function CampaignProvider({ children }) {
   const [allCampaigns, setAllCampaigns] = useState(loadStoredCampaigns);
   const { currentUser } = useContext(AuthContext);
 
+  function canAdminManageCampaign(campaign) {
+    return currentUser?.role === "Super Admin" ||
+      (currentUser?.role === "Admin" && campaign?.createdById === currentUser.id);
+  }
+
   function saveCampaigns(nextCampaigns) {
     try {
       localStorage.setItem(storageKey, JSON.stringify(nextCampaigns));
@@ -64,7 +69,7 @@ export function CampaignProvider({ children }) {
     const now = new Date().toISOString();
     saveCampaigns([
       ...allCampaigns,
-      { ...campaign, id: createCampaignId(new Set(allCampaigns.map((item) => item.id))), ownerId: currentUser?.id, ownerName: currentUser?.name, status: "Active", createdAt: now, updatedAt: now },
+      { ...campaign, id: createCampaignId(new Set(allCampaigns.map((item) => item.id))), ownerId: currentUser?.id, ownerName: currentUser?.name, createdById: currentUser?.id, createdByName: currentUser?.name, status: "Active", createdAt: now, updatedAt: now },
     ]);
   }
 
@@ -79,6 +84,8 @@ export function CampaignProvider({ children }) {
         id: createCampaignId(new Set(allCampaigns.map((item) => item.id))),
         ownerId: owner.id,
         ownerName: owner.name,
+        createdById: currentUser.id,
+        createdByName: currentUser.name,
         status: "Active",
         createdAt: now,
         updatedAt: now,
@@ -108,7 +115,8 @@ export function CampaignProvider({ children }) {
   }
 
   function updateCampaignAsAdmin(id, updatedCampaign) {
-    if (!["Admin", "Super Admin"].includes(currentUser?.role)) return false;
+    const campaignToUpdate = allCampaigns.find((campaign) => campaign.id === id);
+    if (!canAdminManageCampaign(campaignToUpdate)) return false;
     saveCampaigns(allCampaigns.map((campaign) =>
       campaign.id === id
         ? { ...campaign, ...updatedCampaign, updatedAt: new Date().toISOString() }
@@ -118,7 +126,8 @@ export function CampaignProvider({ children }) {
   }
 
   function setCampaignStatusAsAdmin(id, status) {
-    if (!["Admin", "Super Admin"].includes(currentUser?.role)) return false;
+    const campaignToUpdate = allCampaigns.find((campaign) => campaign.id === id);
+    if (!canAdminManageCampaign(campaignToUpdate)) return false;
     saveCampaigns(allCampaigns.map((campaign) =>
       campaign.id === id
         ? {
@@ -136,7 +145,8 @@ export function CampaignProvider({ children }) {
   }
 
   function deleteCampaignAsAdmin(id) {
-    if (!["Admin", "Super Admin"].includes(currentUser?.role)) return false;
+    const campaignToDelete = allCampaigns.find((campaign) => campaign.id === id);
+    if (!canAdminManageCampaign(campaignToDelete)) return false;
     saveCampaigns(allCampaigns.filter((campaign) => campaign.id !== id));
     return true;
   }

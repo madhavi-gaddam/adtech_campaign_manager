@@ -1,6 +1,6 @@
 import { CampaignRow } from "../molecules/CampaignRow";
 
-export function CampaignTable({ campaigns, onDelete, onStatusChange, onEdit, showOwner = false, emptyMessage = "No campaigns found." }) {
+export function CampaignTable({ campaigns, onDelete, onStatusChange, onEdit, canManageCampaign, showOwner = false, emptyMessage = "No campaigns found." }) {
   if (campaigns.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-gray-300 bg-white p-8 text-center">
@@ -38,6 +38,7 @@ export function CampaignTable({ campaigns, onDelete, onStatusChange, onEdit, sho
               onEdit={onEdit}
               onStatusChange={onStatusChange}
               showOwner={showOwner}
+              canManage={canManageCampaign ? canManageCampaign(campaign) : true}
             />
           ))}
         </tbody>

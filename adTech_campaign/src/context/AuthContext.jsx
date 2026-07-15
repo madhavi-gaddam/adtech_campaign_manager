@@ -6,6 +6,14 @@ const sessionKey = "adtech-session";
 const roles = ["User", "Admin", "Super Admin"];
 const manageableRoles = ["User", "Admin"];
 
+const defaultSuperAdmin = {
+  id: "default-super-admin",
+  name: "Madhavi",
+  email: "superadmin@gmail.com",
+  password: "12345",
+  role: "Super Admin",
+};
+
 function readStorage(key, fallback) {
   try {
     const value = JSON.parse(localStorage.getItem(key));
@@ -34,7 +42,11 @@ function ensureSingleSuperAdmin(users) {
 export function AuthProvider({ children }) {
   const [users, setUsers] = useState(() => {
     const storedUsers = readStorage(usersKey, []);
-    const normalizedUsers = ensureSingleSuperAdmin(storedUsers);
+    const savedUsers = storedUsers.length ? storedUsers : [{
+      ...defaultSuperAdmin,
+      createdAt: new Date().toISOString(),
+    }];
+    const normalizedUsers = ensureSingleSuperAdmin(savedUsers);
     if (JSON.stringify(storedUsers) !== JSON.stringify(normalizedUsers)) {
       localStorage.setItem(usersKey, JSON.stringify(normalizedUsers));
     }

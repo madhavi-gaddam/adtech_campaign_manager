@@ -1,5 +1,5 @@
 import { Trash2 } from "lucide-react";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 
 import { Button } from "../components/atoms/Button";
@@ -15,12 +15,12 @@ export function UserControl() {
   const [search, setSearch] = useState("");
   const [userToDelete, setUserToDelete] = useState(null);
 
-  const visibleUsers = useMemo(() => users.filter((user) => {
+  const visibleUsers = users.filter((user) => {
     if (user.role === "Super Admin") return false;
     const query = search.trim().toLowerCase();
     if (!query) return true;
     return `${user.name} ${user.email} ${user.role}`.toLowerCase().includes(query);
-  }), [search, users]);
+  });
 
   function changeManagedRole(user, role) {
     if (updateUserRole(user.id, role)) {

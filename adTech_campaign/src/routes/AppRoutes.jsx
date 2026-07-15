@@ -10,7 +10,6 @@ import Signup from '../pages/signup'
 import { AdminDashboard } from '../pages/admin-dashboard'
 import { SuperAdminDashboard } from '../pages/super-admin-dashboard'
 import { UserDetails } from '../pages/user-details'
-import { UserControl } from '../pages/user-control'
 import { ProtectedRoute } from './protected-route'
 
 function AppRoutes() {
@@ -33,7 +32,6 @@ function AppRoutes() {
       </Route>
       <Route element={<ProtectedRoute roles={["Super Admin"]} />}>
         <Route path="/super-admin" element={<SuperAdminDashboard />} />
-        <Route path="/user-control" element={<UserControl />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
