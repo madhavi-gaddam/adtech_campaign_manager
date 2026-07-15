@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { AuthContext } from "../context/AuthContextValue";
 
 import { CampaignContext } from "../context/CampaignContextValue";
 
@@ -14,11 +13,9 @@ export default function CampaignDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { currentUser } = useContext(AuthContext);
-  const { campaigns, allCampaigns, deleteCampaign, deleteCampaignAsAdmin } = useContext(CampaignContext);
+  const { campaigns, deleteCampaign } = useContext(CampaignContext);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const canManageAllCampaigns = ["Admin", "Super Admin"].includes(currentUser?.role);
-  const visibleCampaigns = canManageAllCampaigns ? allCampaigns : campaigns;
+  const visibleCampaigns = campaigns;
 
   const campaign = visibleCampaigns.find(
     (campaign) => campaign.id === id
@@ -36,8 +33,6 @@ export default function CampaignDetails() {
     );
   }
 
-  const canManageCampaign = !canManageAllCampaigns || currentUser?.role === "Super Admin" || campaign.createdById === currentUser?.id;
-
   return (
     <PageShell>
 
@@ -49,10 +44,8 @@ export default function CampaignDetails() {
       <CampaignDetailsCard
         campaign={campaign}
         onDelete={() => setIsDeleteDialogOpen(true)}
-        canManage={canManageCampaign}
-        editPath={canManageAllCampaigns
-          ? `/admin/users/${campaign.ownerId}/campaigns/edit/${campaign.id}`
-          : `/campaigns/edit/${campaign.id}`}
+        canManage={true}
+        editPath={`/campaigns/edit/${campaign.id}`}
       />
 
       {isDeleteDialogOpen && (
@@ -70,15 +63,9 @@ export default function CampaignDetails() {
                 variant="danger"
                 className="w-full sm:w-auto"
                 onClick={() => {
-                  const deleted = canManageAllCampaigns
-                    ? deleteCampaignAsAdmin(campaign.id)
-                    : (deleteCampaign(campaign.id), true);
-                  if (deleted) {
-                    toast.success("Campaign deleted successfully.");
-                    navigate("/campaigns");
-                  } else {
-                    toast.error("You can delete only campaigns you created.");
-                  }
+                  deleteCampaign(campaign.id);
+                  toast.success("Campaign deleted successfully.");
+                  navigate("/campaigns");
                 }}
               >
                 Delete

@@ -23,11 +23,7 @@ export default function Signup() {
     try {
       const user = signup(values);
       const roleDashboard = user.role === "Super Admin" ? "/super-admin" : user.role === "Admin" ? "/admin" : "/";
-      if (user.role === "Super Admin") {
-        toast.success(`Welcome, Super Admin ${user.name}.`);
-      } else if (user.role === "Admin") {
-        toast.success(`Welcome, Admin ${user.name}.`);
-      }
+      toast.success(`Welcome back, ${user.name}.`);
       navigate(roleDashboard, { replace: true });
     } catch (signupError) {
       setError(signupError.message || "Unable to create account.");

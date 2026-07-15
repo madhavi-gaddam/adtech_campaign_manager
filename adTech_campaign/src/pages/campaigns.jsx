@@ -13,18 +13,14 @@ import { PageHeader } from "../components/molecules/PageHeader";
 import { PageShell } from "../components/templates/PageShell";
 
 export default function Campaigns() {
-  const { currentUser, users } = useContext(AuthContext);
+  const { users } = useContext(AuthContext);
   const {
     campaigns,
-    allCampaigns,
     deleteCampaign,
-    deleteCampaignAsAdmin,
     setCampaignStatus,
-    setCampaignStatusAsAdmin,
   } = useContext(CampaignContext);
   const navigate = useNavigate();
-  const canManageAllCampaigns = ["Admin", "Super Admin"].includes(currentUser?.role);
-  const visibleCampaigns = canManageAllCampaigns ? allCampaigns : campaigns;
+  const visibleCampaigns = campaigns;
   const campaignsWithOwner = visibleCampaigns.map((campaign) => {
     const owner = users.find((user) => user.id === campaign.ownerId);
     return {
@@ -128,10 +124,7 @@ export default function Campaigns() {
     }
 
     try {
-      const deleted = canManageAllCampaigns
-        ? deleteCampaignAsAdmin(campaignToDelete.id)
-        : (deleteCampaign(campaignToDelete.id), true);
-      if (!deleted) throw new Error("Unable to delete campaign.");
+      deleteCampaign(campaignToDelete.id);
       toast.success("Campaign deleted successfully.");
       closeDeleteDialog();
     } catch {
@@ -201,24 +194,15 @@ export default function Campaigns() {
 
       <CampaignTable
         campaigns={filteredCampaigns}
-        showOwner={canManageAllCampaigns}
-        canManageCampaign={(campaign) => !canManageAllCampaigns || currentUser?.role === "Super Admin" || campaign.createdById === currentUser?.id}
+        showOwner={false}
+        canManageCampaign={() => true}
         onDelete={handleDelete}
         onEdit={(id) => {
           const campaign = visibleCampaigns.find((item) => item.id === id);
-          if (currentUser?.role === "Admin" && campaign?.createdById !== currentUser.id) {
-            toast.error("You can edit only campaigns you created.");
-            return;
-          }
-          navigate(canManageAllCampaigns && campaign
-            ? `/admin/users/${campaign.ownerId}/campaigns/edit/${id}`
-            : `/campaigns/edit/${id}`);
+          if (campaign) navigate(`/campaigns/edit/${id}`);
         }}
         onStatusChange={(id, status) => {
-          const updated = canManageAllCampaigns
-            ? setCampaignStatusAsAdmin(id, status)
-            : (setCampaignStatus(id, status), true);
-          if (!updated) toast.error("You can change only campaigns you created.");
+          setCampaignStatus(id, status);
         }}
         emptyMessage={visibleCampaigns.length ? "No campaigns match the selected filters. Try clearing or changing your filters." : "No campaigns have been created yet."}
       />
