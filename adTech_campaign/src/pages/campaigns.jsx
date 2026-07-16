@@ -208,7 +208,7 @@ export default function Campaigns() {
         onEdit={(id) => {
           const campaign = visibleCampaigns.find((item) => item.id === id);
           if (campaign) {
-            navigate(isSuperAdmin ? `/admin/users/${campaign.ownerId}/campaigns/edit/${id}` : `/campaigns/edit/${id}`);
+            navigate(`/campaigns/edit/${id}`);
           }
         }}
         onStatusChange={(id, status) => {

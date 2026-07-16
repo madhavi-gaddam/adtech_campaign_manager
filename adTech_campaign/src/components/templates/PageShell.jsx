@@ -13,6 +13,9 @@ const linkClass = ({ isActive }) =>
       : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
   }`
 
+const isCampaignSectionPath = (pathname) =>
+  pathname.startsWith('/campaigns/') && pathname !== '/campaigns/create'
+
 export function PageShell({ children, rows }) {
   const isDashboard = rows === 'dashboard'
   const { isDark, setTheme } = useTheme()
@@ -23,6 +26,7 @@ export function PageShell({ children, rows }) {
   const hasAdminDashboard = currentUser?.role === 'Admin' || currentUser?.role === 'Super Admin'
   const adminLabel = currentUser?.role === 'Super Admin' ? 'Super Admin' : 'Admin'
   const isSuperAdmin = currentUser?.role === 'Super Admin'
+  const isCampaignSectionPage = isCampaignSectionPath(location.pathname)
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false)
 
   function signOut() {
@@ -56,7 +60,7 @@ export function PageShell({ children, rows }) {
         </div>
         <nav className={`mx-auto mt-3 grid max-w-7xl gap-2 ${hasAdminDashboard ? 'grid-cols-4' : 'grid-cols-3'}`} aria-label="Main navigation">
           <NavLink to="/" end aria-label="User dashboard" title="User Dashboard" className={({ isActive }) => `${linkClass({ isActive })} justify-center px-3`}><LayoutDashboard size={18} aria-hidden="true" /><span className="sr-only">User Dashboard</span></NavLink>
-          <NavLink to="/campaigns" end aria-label="Campaigns" title="Campaigns" className={({ isActive }) => `${linkClass({ isActive })} justify-center px-3`}><Megaphone size={18} aria-hidden="true" /><span className="sr-only">Campaigns</span></NavLink>
+          <NavLink to="/campaigns" end aria-label="Campaigns" title="Campaigns" className={({ isActive }) => `${linkClass({ isActive: isActive || isCampaignSectionPage })} justify-center px-3`}><Megaphone size={18} aria-hidden="true" /><span className="sr-only">Campaigns</span></NavLink>
           <NavLink to="/campaigns/create" aria-label="Create campaign" title="Create campaign" className={({ isActive }) => `${linkClass({ isActive })} justify-center px-3`}><PlusCircle size={18} aria-hidden="true" /><span className="sr-only">Create campaign</span></NavLink>
           {hasAdminDashboard && <NavLink to={adminPath} aria-label="Administration dashboard" title="Administration dashboard" className={({ isActive }) => `${linkClass({ isActive: isActive || (isSuperAdmin && location.pathname.startsWith('/admin/users/')) })} justify-center px-3`}><ShieldCheck size={18} aria-hidden="true" /><span className="sr-only">Administration dashboard</span></NavLink>}
         </nav>
@@ -73,7 +77,7 @@ export function PageShell({ children, rows }) {
 
           <nav className="mt-5 grid gap-2">
             <NavLink to="/" end className={linkClass}><LayoutDashboard size={18} aria-hidden="true" />Dashboard</NavLink>
-            <NavLink to="/campaigns" end className={linkClass}><Megaphone size={18} aria-hidden="true" />Campaigns</NavLink>
+            <NavLink to="/campaigns" end className={({ isActive }) => linkClass({ isActive: isActive || isCampaignSectionPage })}><Megaphone size={18} aria-hidden="true" />Campaigns</NavLink>
             <NavLink to="/campaigns/create" className={linkClass}><PlusCircle size={18} aria-hidden="true" />Create Campaign</NavLink>
             {hasAdminDashboard && <NavLink to={adminPath} className={({ isActive }) => linkClass({ isActive: isActive || (isSuperAdmin && location.pathname.startsWith('/admin/users/')) })}><ShieldCheck size={18} aria-hidden="true" />{adminLabel}</NavLink>}
           </nav>

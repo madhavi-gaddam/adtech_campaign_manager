@@ -23,11 +23,12 @@ export function CampaignForm() {
   const navigate = useNavigate();
   const { id, userId } = useParams();
   const isAdminMode = Boolean(userId) && ["Admin", "Super Admin"].includes(currentUser?.role);
+  const isSuperAdminCampaignEdit = Boolean(id) && !userId && currentUser?.role === "Super Admin";
   const selectedUser = isAdminMode ? users.find((user) => user.id === userId) : null;
-  const availableCampaigns = isAdminMode ? allCampaigns : campaigns;
+  const availableCampaigns = isAdminMode || isSuperAdminCampaignEdit ? allCampaigns : campaigns;
   const editCampaign = availableCampaigns.find((campaign) => campaign.id === id);
   const isEditMode = Boolean(id);
-  const ownerCampaigns = isAdminMode
+  const ownerCampaigns = isAdminMode || isSuperAdminCampaignEdit
     ? allCampaigns.filter((campaign) => campaign.ownerId === (editCampaign?.ownerId || userId))
     : campaigns;
   const [values, setValues] = useState({
@@ -98,7 +99,7 @@ export function CampaignForm() {
 
     try {
       if (isEditMode) {
-        if (isAdminMode) {
+        if (isAdminMode || isSuperAdminCampaignEdit) {
           const updated = updateCampaignAsAdmin(id, campaignValues);
           if (!updated) throw new Error("Only admins can edit this campaign.");
         } else {

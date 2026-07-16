@@ -52,10 +52,7 @@ export function AuthProvider({ children }) {
     }
     return normalizedUsers;
   });
-  const [currentUser, setCurrentUser] = useState(() => {
-    const savedSession = readStorage(sessionKey, null);
-    return users.find((user) => user.id === savedSession?.id) || null;
-  });
+  const [currentUser, setCurrentUser] = useState(null);
 
   function saveUsers(nextUsers) {
     const normalizedUsers = ensureSingleSuperAdmin(nextUsers);
@@ -76,12 +73,10 @@ export function AuthProvider({ children }) {
     if (!existingUser.password) {
       const updatedUser = { ...existingUser, password };
       saveUsers(users.map((item) => item.id === existingUser.id ? updatedUser : item));
-      localStorage.setItem(sessionKey, JSON.stringify(updatedUser));
       setCurrentUser(updatedUser);
       return updatedUser;
     }
 
-    localStorage.setItem(sessionKey, JSON.stringify(existingUser));
     setCurrentUser(existingUser);
     return existingUser;
   }
@@ -112,7 +107,6 @@ export function AuthProvider({ children }) {
     };
 
     saveUsers([...latestUsers, user]);
-    localStorage.setItem(sessionKey, JSON.stringify(user));
     setCurrentUser(user);
     return user;
   }
@@ -181,7 +175,6 @@ export function AuthProvider({ children }) {
     saveUsers(nextUsers);
     if (currentUser?.id === id) {
       const nextCurrentUser = nextUsers.find((user) => user.id === id);
-      localStorage.setItem(sessionKey, JSON.stringify(nextCurrentUser));
       setCurrentUser(nextCurrentUser);
     }
     return true;

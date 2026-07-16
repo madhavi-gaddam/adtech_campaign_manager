@@ -3,7 +3,6 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 
 import { Button } from "../components/atoms/Button";
 import { Input } from "../components/atoms/Input";
-import { SelectField } from "../components/atoms/SelectField";
 import { BrandLockup } from "../components/molecules/BrandLockup";
 import { FormField } from "../components/molecules/FormField";
 import { AuthContext } from "../context/AuthContextValue";
@@ -12,7 +11,7 @@ import { toast } from "react-toastify";
 export default function Signup() {
   const { currentUser, signup } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [values, setValues] = useState({ name: "", email: "", password: "", role: "User" });
+  const [values, setValues] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
 
   if (currentUser) return <Navigate to="/" replace />;
@@ -47,14 +46,6 @@ export default function Signup() {
 
         <FormField label="Password" htmlFor="password">
           <Input id="password" type="password" value={values.password} onChange={(event) => setValues({ ...values, password: event.target.value })} placeholder="Create password" autoComplete="new-password" />
-        </FormField>
-
-        <FormField label="Role" htmlFor="role">
-          <SelectField id="role" value={values.role} onChange={(event) => setValues({ ...values, role: event.target.value })}>
-            <option>User</option>
-            <option>Admin</option>
-            <option>Super Admin</option>
-          </SelectField>
         </FormField>
 
         {error && <p className="mb-3 text-sm font-medium text-red-600">{error}</p>}
