@@ -101,7 +101,7 @@ export function UserDetails() {
       </section>
 
       <section className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-        <div className="grid gap-3 p-3 sm:hidden">
+        <div className="grid gap-3 p-3 lg:hidden">
           {userCampaigns.map((campaign) => {
             const campaignName = campaign.campaignName || campaign.name || "Untitled Campaign";
 
@@ -110,7 +110,11 @@ export function UserDetails() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-xs font-bold uppercase text-blue-700">#{campaign.id}</p>
-                    <h2 className="mt-1 break-words text-base font-extrabold text-gray-900">{campaignName}</h2>
+                    <h2 className="mt-1 break-words text-base font-extrabold">
+                      <Link to={`/admin/users/${user.id}/campaigns/${campaign.id}`} className="text-blue-900 hover:text-blue-700 hover:underline">
+                        {campaignName}
+                      </Link>
+                    </h2>
                     <p className="mt-1 text-sm text-gray-600">{campaign.platform} · {campaign.ageGroup || "All"}</p>
                   </div>
                   <p className="shrink-0 text-sm font-extrabold text-gray-900">{formatCurrency(campaign.budget)}</p>
@@ -164,7 +168,7 @@ export function UserDetails() {
           )}
         </div>
 
-        <div className="campaign-table-scroll hidden overflow-x-auto sm:block">
+        <div className="campaign-table-scroll hidden overflow-x-auto lg:block">
           <table className="w-full min-w-[1080px] border-collapse text-left text-sm">
             <thead className="border-b border-gray-200 bg-gray-100 text-xs uppercase text-gray-500">
               <tr>
@@ -185,7 +189,11 @@ export function UserDetails() {
                 return (
                   <tr key={campaign.id} className="border-b border-gray-200 last:border-0 hover:bg-gray-50">
                     <td className="px-4 py-4 font-bold text-blue-900">{campaign.id}</td>
-                    <td className="px-4 py-4 font-bold text-gray-900">{campaignName}</td>
+                    <td className="px-4 py-4 font-bold">
+                      <Link to={`/admin/users/${user.id}/campaigns/${campaign.id}`} className="text-blue-900 hover:text-blue-700 hover:underline">
+                        {campaignName}
+                      </Link>
+                    </td>
                     <td className="px-4 py-4 text-gray-700">{campaign.platform}</td>
                     <td className="px-4 py-4 text-gray-700">{campaign.ageGroup || "All"}</td>
                     <td className="px-4 py-4 font-semibold text-gray-900">{formatCurrency(campaign.budget)}</td>

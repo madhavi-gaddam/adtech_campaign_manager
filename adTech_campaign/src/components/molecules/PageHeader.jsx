@@ -1,7 +1,7 @@
 
 export function PageHeader({ eyebrow, title, description, actions }) {
   return (
-    <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div className="flex min-w-0 flex-col gap-4 landscape:gap-2 sm:flex-row sm:items-start sm:justify-between">
       <div className="min-w-0">
         {eyebrow && (
           <p className="text-xs font-bold uppercase tracking-wide text-blue-600">
@@ -9,7 +9,7 @@ export function PageHeader({ eyebrow, title, description, actions }) {
           </p>
         )}
 
-        <h1 className="mt-1 break-all text-2xl font-extrabold text-gray-900">
+        <h1 className="mt-1 break-all text-2xl font-extrabold text-gray-900 landscape:text-xl sm:text-2xl">
           {title}
         </h1>
 

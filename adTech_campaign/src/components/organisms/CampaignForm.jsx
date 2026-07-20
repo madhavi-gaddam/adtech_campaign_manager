@@ -7,9 +7,11 @@ import { ageGroupOptions, platformOptions } from "../../data/campaignOptions";
 import { Button } from "../atoms/Button";
 import { Input } from "../atoms/Input";
 import { SelectField } from "../atoms/SelectField";
+import { Textarea } from "../atoms/Textarea";
 import { FormField } from "../molecules/FormField";
 
 const MAX_NAME_LENGTH = 30;
+const MAX_DESCRIPTION_LENGTH = 500;
 const MAX_BUDGET = 100_000_000;
 
 function FieldError({ error }) {
@@ -33,6 +35,7 @@ export function CampaignForm() {
     : campaigns;
   const [values, setValues] = useState({
     campaignName: editCampaign?.campaignName || editCampaign?.name || "",
+    description: editCampaign?.description || "",
     platform: editCampaign?.platform || "",
     ageGroup: editCampaign?.ageGroup || "",
     budget: editCampaign?.budget || "",
@@ -48,6 +51,7 @@ export function CampaignForm() {
   function validate() {
     const nextErrors = {};
     const campaignName = values.campaignName.trim();
+    const description = values.description.trim();
     const budget = Number(values.budget);
 
     if (!campaignName) {
@@ -59,6 +63,12 @@ export function CampaignForm() {
       String(campaign.campaignName || campaign.name || "").trim().toLowerCase() === campaignName.toLowerCase()
     )) {
       nextErrors.campaignName = "A campaign with this name already exists.";
+    }
+
+    if (!description) {
+      nextErrors.description = "Please describe what this campaign is about.";
+    } else if (description.length > MAX_DESCRIPTION_LENGTH) {
+      nextErrors.description = `Campaign description cannot exceed ${MAX_DESCRIPTION_LENGTH} characters.`;
     }
 
     if (!values.platform) nextErrors.platform = "Please select a platform.";
@@ -94,6 +104,7 @@ export function CampaignForm() {
     const campaignValues = {
       ...values,
       campaignName: values.campaignName.trim(),
+      description: values.description.trim(),
       budget: Number(values.budget),
     };
 
@@ -137,6 +148,24 @@ export function CampaignForm() {
           {values.campaignName.length}/{MAX_NAME_LENGTH} characters
         </p>
         <FieldError error={errors.campaignName} />
+      </FormField>
+
+      <FormField label="What is this campaign about?" htmlFor="description">
+        <Textarea
+          id="description"
+          name="description"
+          value={values.description}
+          onChange={handleChange}
+          placeholder="Describe the campaign goal, message, product, or offer..."
+          rows={5}
+          maxLength={MAX_DESCRIPTION_LENGTH}
+          aria-invalid={Boolean(errors.description)}
+          aria-describedby="description-count"
+        />
+        <p id="description-count" className="mt-1 text-right text-xs text-gray-500">
+          {values.description.length}/{MAX_DESCRIPTION_LENGTH} characters
+        </p>
+        <FieldError error={errors.description} />
       </FormField>
 
       <FormField label="Platform" htmlFor="platform">

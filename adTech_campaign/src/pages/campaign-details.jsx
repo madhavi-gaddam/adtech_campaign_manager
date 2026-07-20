@@ -11,18 +11,23 @@ import { CampaignDetailsCard } from "../components/organisms/CampaignDetailsCard
 import { Button } from "../components/atoms/Button";
 
 export default function CampaignDetails() {
-  const { id } = useParams();
+  const { id, userId } = useParams();
   const navigate = useNavigate();
 
   const { currentUser } = useContext(AuthContext);
   const { campaigns, allCampaigns, deleteCampaign, deleteCampaignAsAdmin } = useContext(CampaignContext);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const isSuperAdmin = currentUser?.role === "Super Admin";
-  const visibleCampaigns = isSuperAdmin ? allCampaigns : campaigns;
+  const isAdmin = currentUser?.role === "Admin";
+  const isAdminView = Boolean(userId) && (isSuperAdmin || isAdmin);
+  const visibleCampaigns = isSuperAdmin || isAdmin ? allCampaigns : campaigns;
 
   const campaign = visibleCampaigns.find(
-    (campaign) => campaign.id === id
+    (campaign) => campaign.id === id && (!isAdminView || campaign.ownerId === userId)
   );
+  const canManage = isSuperAdmin ||
+    (isAdmin && campaign?.createdById === currentUser?.id) ||
+    campaign?.ownerId === currentUser?.id;
 
   if (!campaign) {
     return (
@@ -47,8 +52,9 @@ export default function CampaignDetails() {
       <CampaignDetailsCard
         campaign={campaign}
         onDelete={() => setIsDeleteDialogOpen(true)}
-        canManage={true}
-        editPath={isSuperAdmin ? `/admin/users/${campaign.ownerId}/campaigns/edit/${campaign.id}` : `/campaigns/edit/${campaign.id}`}
+        canManage={canManage}
+        backPath={isAdminView ? `/admin/users/${campaign.ownerId}` : "/campaigns"}
+        editPath={isAdminView ? `/admin/users/${campaign.ownerId}/campaigns/edit/${campaign.id}` : `/campaigns/edit/${campaign.id}`}
       />
 
       {isDeleteDialogOpen && (
@@ -66,13 +72,13 @@ export default function CampaignDetails() {
                 variant="danger"
                 className="w-full sm:w-auto"
                 onClick={() => {
-                  if (isSuperAdmin) {
+                  if (isSuperAdmin || isAdmin) {
                     deleteCampaignAsAdmin(campaign.id);
                   } else {
                     deleteCampaign(campaign.id);
                   }
                   toast.success("Campaign deleted successfully.");
-                  navigate("/campaigns");
+                  navigate(isAdminView ? `/admin/users/${campaign.ownerId}` : "/campaigns");
                 }}
               >
                 Delete

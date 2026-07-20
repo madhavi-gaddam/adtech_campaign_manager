@@ -58,7 +58,7 @@ export function UserControl() {
       </section>
 
       <section className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-        <div className="grid gap-3 p-3 sm:hidden">
+        <div className="grid gap-3 p-3 lg:hidden">
           {visibleUsers.map((user) => (
             <article key={user.id} className="rounded-lg border border-gray-200 bg-gray-50 p-3">
               <div className="flex items-start justify-between gap-3">
@@ -89,7 +89,7 @@ export function UserControl() {
           )}
         </div>
 
-        <div className="campaign-table-scroll hidden overflow-x-auto sm:block">
+        <div className="campaign-table-scroll hidden overflow-x-auto lg:block">
           <table className="w-full min-w-[760px] border-collapse text-left text-sm">
             <thead className="border-b border-gray-200 bg-gray-100 text-xs uppercase text-gray-500">
               <tr>

@@ -36,8 +36,8 @@ export function PageShell({ children, rows }) {
 
   return (
     <div className={`${isDashboard ? 'lg:h-screen lg:overflow-hidden' : 'min-h-screen'} overflow-x-clip bg-gray-100`}>
-      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 px-4 py-3 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95 lg:hidden">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+      <header className="mobile-app-header sticky top-0 z-50 border-b border-gray-200 bg-white/95 px-4 py-3 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95 lg:hidden">
+        <div className="mobile-app-top-row mx-auto flex max-w-7xl items-center justify-between gap-3">
           <BrandLockup />
           <button
             type="button"
@@ -48,7 +48,7 @@ export function PageShell({ children, rows }) {
             {isDark ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
           </button>
         </div>
-        <div className="mx-auto mt-3 flex max-w-7xl items-center justify-between gap-3">
+        <div className="mobile-app-user-row mx-auto mt-3 flex max-w-7xl items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
             <UserCircle2 size={28} className="shrink-0 text-blue-600" aria-hidden="true" />
             <div className="min-w-0">
@@ -58,7 +58,7 @@ export function PageShell({ children, rows }) {
           </div>
           <button type="button" onClick={() => setIsLogoutDialogOpen(true)} className="inline-flex h-10 shrink-0 items-center justify-center rounded-md border border-slate-300 px-3 text-sm font-bold text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-600 dark:text-slate-100">Logout</button>
         </div>
-        <nav className={`mx-auto mt-3 grid max-w-7xl gap-2 ${hasAdminDashboard ? 'grid-cols-4' : 'grid-cols-3'}`} aria-label="Main navigation">
+        <nav className={`mobile-app-nav mx-auto mt-3 grid max-w-7xl gap-2 ${hasAdminDashboard ? 'grid-cols-4' : 'grid-cols-3'}`} aria-label="Main navigation">
           <NavLink to="/" end aria-label="User dashboard" title="User Dashboard" className={({ isActive }) => `${linkClass({ isActive })} justify-center px-3`}><LayoutDashboard size={18} aria-hidden="true" /><span className="sr-only">User Dashboard</span></NavLink>
           <NavLink to="/campaigns" end aria-label="Campaigns" title="Campaigns" className={({ isActive }) => `${linkClass({ isActive: isActive || isCampaignSectionPage })} justify-center px-3`}><Megaphone size={18} aria-hidden="true" /><span className="sr-only">Campaigns</span></NavLink>
           <NavLink to="/campaigns/create" aria-label="Create campaign" title="Create campaign" className={({ isActive }) => `${linkClass({ isActive })} justify-center px-3`}><PlusCircle size={18} aria-hidden="true" /><span className="sr-only">Create campaign</span></NavLink>
@@ -98,7 +98,7 @@ export function PageShell({ children, rows }) {
           </div>
         </aside>
 
-        <main className={`min-w-0 flex-1 px-4 py-5 sm:px-6 sm:py-6 ${isDashboard ? 'lg:h-screen' : ''}`}>
+        <main className={`app-main min-w-0 flex-1 px-4 py-5 sm:px-6 sm:py-6 ${isDashboard ? 'lg:h-screen' : ''}`}>
           <div className={`mx-auto grid w-full max-w-7xl min-w-0 gap-4 ${isDashboard ? 'lg:h-full lg:grid-rows-[auto_auto_minmax(0,1fr)]' : ''}`}>
             {children}
           </div>

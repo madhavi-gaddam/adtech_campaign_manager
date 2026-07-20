@@ -28,6 +28,7 @@ function normalizeCampaigns(value) {
       ...campaign,
       id,
       campaignName: String(campaign.campaignName || campaign.name || "Untitled Campaign").trim(),
+      description: String(campaign.description || "").trim(),
       budget: Number.isFinite(budget) && budget >= 0 ? budget : 0,
       status: ["Active", "Paused", "Completed"].includes(campaign.status) ? campaign.status : "Active",
     };

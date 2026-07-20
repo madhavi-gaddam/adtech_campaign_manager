@@ -27,6 +27,7 @@ function AppRoutes() {
       <Route element={<ProtectedRoute roles={["Admin", "Super Admin"]} />}>
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/users/:userId" element={<UserDetails />} />
+        <Route path="/admin/users/:userId/campaigns/:id" element={<CampaignDetails />} />
         <Route path="/admin/users/:userId/campaigns/create" element={<CreateCampaign />} />
         <Route path="/admin/users/:userId/campaigns/edit/:id" element={<CreateCampaign />} />
       </Route>
